@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Verdana, sans-serif;
+  --font-serif: 'Times New Roman', serif;
+  --font-mono: 'Courier', monospace;
+}

@@ -1,0 +1,8 @@
+{
+    "files": [], // No specific files to compile at the root
+    "references": [
+      { "path": "packages/core" },
+      { "path": "packages/backend" },
+      { "path": "packages/frontend" }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@chr-ide/backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "dev": "npm run build && node dist/index.js",
+    "clean": "rimraf dist tsconfig.tsbuildinfo"
+  },
+  "author": "",
+  "description": "",
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "@chr-ide/core": "0.0.0"
+  }
+}

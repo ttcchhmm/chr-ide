@@ -1,0 +1,15 @@
+{
+  "name": "@chr-ide/core",
+  "version": "0.0.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "clean": "rimraf dist tsconfig.tsbuildinfo"
+  }
+}

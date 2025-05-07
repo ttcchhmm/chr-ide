@@ -1,0 +1,284 @@
+/*
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the Apache License, Version 2.0.
+ *
+ *  Copyright:
+ *     2016, Vincent Barichard <Vincent.Barichard@univ-angers.fr>
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ */
+
+#include <array>
+#include <iostream>
+#include <fstream>
+#include <unordered_set>
+#include <string>
+#include <vector>
+
+#include <chrpp.hh>
+#include <options.hpp>
+
+/**
+ * @brief Sudoku puzzle grid
+ *
+ * SudokuGrid is a struct helping to load a sudoku grid, update values of
+ * the grid and print a nice grid at the end.
+ * \ingroup Examples
+ */
+struct SudokuGrid
+{
+	std::array< std::array< int , 9 >, 9 > m_grid;	///< The sudoku grid
+	std::string m_file_name;						///< The file name of the input grid
+
+	/**
+	 * Initialize an instance of Sudoku.
+	 * @param file_name The file name for loading the grid
+	 */
+	SudokuGrid(std::string file_name) : m_file_name(file_name)
+	{
+		std::string line;
+		std::ifstream sudoku_file (file_name);
+		if (sudoku_file.is_open())
+		{
+			unsigned int i = 0, j = 0;
+			int value;
+			while ( sudoku_file >> value )
+			{
+				m_grid[i][j] = value;
+				++j;
+				if (j == 9)
+				{
+					++i;
+					j = 0;
+				}
+			}
+			sudoku_file.close();
+		} else {
+			std::cerr << "File " << file_name << " not found." << std::endl;
+			exit(1);
+		}
+	}
+
+	/**
+	 * Label a slot to a given value.
+	 * @param x The row of the slot
+	 * @param y The column of the slot
+	 * @param v The value to assign
+	 */
+	void assign(unsigned int x, unsigned int y, int v)
+	{
+		m_grid[x][y] = v;
+	}
+
+	/**
+	 * Return the first element that remains in the domain \a dom of the slot.
+	 * @param dom The domain corresponding to the slot
+	 * @return The first element that remains in the domain
+	 */
+	int first_value(const std::unordered_set< int >& dom) const
+	{
+		return *dom.begin();
+	}
+
+	/**
+	 * Check if the value \a x is in the domain \a dom.
+	 * @param x The value to check
+	 * @param dom The domain that contains all remaining values
+	 * @return True if \a x is in \a dom, false otherwise
+	 */
+	bool in(int x, const std::unordered_set< int >& dom) const
+	{
+		return (dom.find(x) != dom.end());
+	}
+
+	/**
+	 * Remove value \a x from domain \a dom.
+	 * @param x The value to remove
+	 * @param var_dom The domain that contains all remaining values
+	 * @return Failure is the domain is empty, Success otherwise
+	 */
+	chr::ES_CHR remove_from(int x, chr::Logical_var_mutable< std::unordered_set< int > >& var_dom)
+	{
+		return var_dom.update_mutable([x](auto& d){d.erase(x);});
+	}
+
+	/**
+	 * Print the sudoku grid.
+	 */
+	void print()
+	{
+		for (unsigned int i=0; i < 9; ++i)
+		{
+			for (unsigned int j=0; j < 9; ++j)
+				if (m_grid[i][j] == 0)
+					std::cout << "  ";
+				else
+					std::cout << m_grid[i][j] << " ";
+			std::cout << std::endl;
+		}
+	}
+};
+
+/**
+ * @brief Sudoku puzzle
+ *
+ * Sudoku is a logic-based, combinatorial number-placement puzzle.
+ * The objective is to fill a 9×9 grid with digits so that each column, each row,
+ * and each of the nine 3×3 subgrids that compose the grid (also called "boxes",
+ * "blocks", "regions", or "subsquares") contains all of the digits from 1 to 9.
+ * The puzzle setter provides a partially completed grid, which for a well-posed
+ * puzzle has a unique solution (source Wikipedia).
+ * This Sudoku CHR program implement a classical branch-and-bound algorithm with solution
+ * check. There is no propagation, so it is very inefficient and may lead to huge computing
+ * times.
+ * \ingroup Examples
+ *
+	<CHR name="Sudoku" parameters="SudokuGrid& sg">
+	<chr_constraint> slot(+int,+int,+int), slot_dom(+int,+int,+int,+int), solve()
+
+	empty_dom @ slot_dom(_,_,Min,Max) <=> Min > Max | failure() ;;
+
+	col    @ slot(_,C,V), slot(_,C,V) # passive     <=> failure();;
+	row    @ slot(R,_,V), slot(R,_,V) # passive     <=> failure();;
+	square @ slot(R1,C1,V), slot(R2,C2,V) # passive <=> ((R1 / 3) == (R2 / 3)) && ((C1 / 3) == (C2 / 3)) | failure();;
+
+	solve_next @ solve(), slot_dom(R, C, Min, Max) # passive <=>
+										exists(v, *Min, *Max, (
+											sg.assign(R,C,v),
+											slot(R,C,v),
+											solve()											
+										) );;
+	solve_end @ solve() <=> success() ;;
+	</CHR>
+ */
+
+/**
+ * @brief Sudoku puzzle with domain consistency
+ *
+ * Sudoku is a logic-based, combinatorial number-placement puzzle.
+ * The objective is to fill a 9×9 grid with digits so that each column, each row,
+ * and each of the nine 3×3 subgrids that compose the grid (also called "boxes",
+ * "blocks", "regions", or "subsquares") contains all of the digits from 1 to 9.
+ * The puzzle setter provides a partially completed grid, which for a well-posed
+ * puzzle has a unique solution (source Wikipedia).
+ * This algorithm uses domain consistency to reduce the depth of the search tree.
+ * \ingroup Examples
+ *
+	<CHR name="SudokuDom" parameters="SudokuGrid& sg">
+	<chr_constraint> slot(+int,+int,+int), slot_dom(+int,+int,-std::unordered_set<[ int ]>), solve()
+
+	duplicate1 @ slot(R,C,_) \ slot_dom(R,C,_) # passive <=> success();;
+	duplicate2 @ slot(R,C,_) \ slot(R,C,_) # passive <=> success();;
+	empty      @ slot_dom(_,_,D) <=> (*D).empty() | failure();;
+	single     @ slot_dom(R,C,D) <=> (*D).size() == 1 | sg.assign(R,C,*(*D).begin()), slot(R,C,*(*D).begin());;
+
+	col    @ slot(_,C,V), slot(_,C,V) # passive     <=> failure();;
+	row    @ slot(R,_,V), slot(R,_,V) # passive     <=> failure();;
+	square @ slot(R1,C1,V), slot(R2,C2,V) # passive <=> ((R1 / 3) == (R2 / 3)) && ((C1 / 3) == (C2 / 3)) | failure();;
+
+	propagate_col @ slot(_,C,V), slot_dom(_,C,D) # passive =>> sg.in(V,*D) | sg.remove_from(V,D);;
+	propagate_row @ slot(R,_,V), slot_dom(R,_,D) # passive =>> sg.in(V,*D) | sg.remove_from(V,D);;
+	propagate_square @ slot(R1,C1,V), slot_dom(R2,C2,D) # passive =>> sg.in(V,*D) && ((R1 / 3) == (R2 / 3)) && ((C1 / 3) == (C2 / 3)) | sg.remove_from(V,D);;
+
+	solve_next @ slot_dom(R, C, L) # passive \ solve() <=> v = sg.first_value(*L),
+										(
+												sg.assign(R,C,v),
+												slot(R,C,v),
+												solve()
+												;
+												sg.remove_from(v,L),
+												solve()
+										);;
+	solve_end @ solve() <=> success() ;;
+	</CHR>
+ */
+
+int main(int argc, const char *argv[])
+{
+	std::cout << "Heyyyyy" << std::endl;
+
+	TRACE( chr::Log::register_flags(chr::Log::ALL); )
+	Options options = parse_options(argc, argv, {
+			{ "dom", "d", false, "Use domain consistency model"},
+			{ "", "", true, "File name of the grid"}
+	});
+
+	Options_values values;
+	if (has_option("", options, values))
+	{
+		if (has_option("dom", options))
+		{
+			SudokuGrid sg(values[0].str());
+			auto space = SudokuDom::create(sg);
+			std::cout << "Sudoku: ";
+			if (chr::failed())
+				std::cout << "No solution" << std::endl;
+			else
+			{
+				CHR_RUN(
+					for (unsigned int i=0; !chr::failed() && (i < sg.m_grid.size()); ++i)
+						for (unsigned int j=0; !chr::failed() && (j < sg.m_grid[i].size()); ++j)
+							if (sg.m_grid[i][j] == 0) 
+							{
+								chr::Logical_var< std::unordered_set< int > > dom;
+								dom.update_mutable( std::unordered_set< int >({1, 2, 3, 4, 5, 6, 7, 8, 9}) );
+								space->slot_dom(i,j,dom);
+							}
+					for (unsigned int i=0; !chr::failed() && (i < sg.m_grid.size()); ++i)
+						for (unsigned int j=0; !chr::failed() && (j < sg.m_grid[i].size()); ++j)
+							if (sg.m_grid[i][j] != 0) 
+								space->slot(i,j,sg.m_grid[i][j]);
+					if (!chr::failed()) space->solve()
+				);
+				if (chr::failed())
+					std::cout << "No solution" << std::endl;
+				else
+				{
+					std::cout << "Solved grid" << std::endl;
+					sg.print();
+				}
+			}
+		}
+		else
+		{
+			SudokuGrid sg(values[0].str());
+			auto space = Sudoku::create(sg);
+			std::cout << "Sudoku: ";
+			if (chr::failed())
+				std::cout << "No solution" << std::endl;
+			else
+			{
+				CHR_RUN(
+					for (unsigned int i=0; !chr::failed() && (i < sg.m_grid.size()); ++i)
+						for (unsigned int j=0; !chr::failed() && (j < sg.m_grid[i].size()); ++j)
+							if (sg.m_grid[i][j] == 0) space->slot_dom(i,j,1,9);
+							else space->slot(i,j,sg.m_grid[i][j]);
+					if (!chr::failed()) space->solve()
+				);
+				if (chr::failed())
+					std::cout << "No solution" << std::endl;
+				else
+				{
+					std::cout << "Solved grid" << std::endl;
+					sg.print();
+				}
+			}
+		}
+		chr::Statistics::print(std::cout);
+	} else {
+		std::cout << "Missing parameter" << std::endl << std::endl;
+		std::cout << options.m_help_message;
+	}
+    return 0;
+}
