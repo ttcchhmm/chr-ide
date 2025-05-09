@@ -28,7 +28,7 @@ self.MonacoEnvironment = {
 }
 
 onMounted(() => {
-  monaco.editor.create(document.getElementById(`monaco-${randomId}`), {
+  monaco.editor.create(document.getElementById(`monaco-${randomId}`) as HTMLElement, {
     value: '',
   });
 });
