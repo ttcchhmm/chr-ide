@@ -24,9 +24,10 @@
     "typescript": "~5.8.3"
   },
   "scripts": {
-    "build": "npm run build -w @chr-ide/backend && npm run build -w @chr-ide/frontend",
+    "build": "npm run build -w @chr-ide/core && npm run build -w @chr-ide/simple-client && npm run build -w @chr-ide/backend && npm run build -w @chr-ide/frontend",
     "clean": "npm run clean --workspaces --if-present",
     "dev:backend": "npm run dev -w @chr-ide/backend",
-    "dev:frontend": "npm run dev -w @chr-ide/frontend"
+    "dev:frontend": "npm run dev -w @chr-ide/frontend",
+    "dev:simple-client": "npm run dev -w @chr-ide/simple-client"
   }
 }

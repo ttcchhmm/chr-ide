@@ -32,6 +32,3 @@ import MonacoEditor from './components/MonacoEditor.vue';
   </main>
   </div>
 </template>
-
-<style>
-</style>
