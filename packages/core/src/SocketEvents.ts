@@ -48,6 +48,6 @@ export type ClientToServerEvents = {
     pushJob: (code: string) => void;
 };
 
-export type InterServerEvents = {};
+export type InterServerEvents = object;
 
-export type SocketData = {};
+export type SocketData = object;

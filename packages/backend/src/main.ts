@@ -9,6 +9,8 @@ console.log('Starting chr-ide');
 
 // Setup the Socket.io server
 const app = express();
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
 
