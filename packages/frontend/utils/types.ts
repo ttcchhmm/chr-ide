@@ -1,1 +1,1 @@
-export type OptionalFunction = (() => void) | null;
+export type OptionalFunction = (() => void) |  null;
