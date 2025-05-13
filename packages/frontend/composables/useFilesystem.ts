@@ -109,6 +109,11 @@ export const useFilesystem = () => {
                 chrStore.$patch(json);
             },
 
+            resetHandle: () => {
+                handle = null;
+                fileName.value = '';
+            },
+
             fileName,
         };
     } else { // Fallback for browsers without filesystem API support
@@ -139,6 +144,8 @@ export const useFilesystem = () => {
             },
 
             saveAs: null, // Unsupported without a way to keep an handle
+
+            resetHandle: () => {},
 
             open: async () => {
                 const json = JSON.parse(await openFileClassic());

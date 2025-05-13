@@ -16,6 +16,11 @@ const props = defineProps<{
     save: NullableCallback,
 
     /**
+     * Function called when the "New" button is clicked.
+     */
+    newProject: () => void,
+
+    /**
      * Function called when the "Run" button is clicked.
      */
     run: () => void,
@@ -52,6 +57,18 @@ const props = defineProps<{
                             <UKbd variant="solid" value="shift"/>
                             <span class="pr-1 pl-1">+</span>
                             <UKbd variant="solid" value="R"/>
+                        </span>
+                    </template>
+                </UPopover>
+
+                <UPopover mode="hover" :open-delay="500">
+                    <UButton icon="i-lucide-plus" @click="props.newProject">New</UButton>
+
+                    <template #content>
+                        <span class="p-1 flex items-center">
+                            <UKbd variant="solid">Ctrl / ⌘</UKbd>
+                            <span class="pr-1 pl-1">+</span>
+                            <UKbd variant="solid" value="N"/>
                         </span>
                     </template>
                 </UPopover>

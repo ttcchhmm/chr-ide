@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import CodeSection from '~/components/CodeSection.vue';
 import ConstraintStoreSection from '~/components/ConstraintStoreSection.vue';
+import ResetWorkspaceDialog from '~/components/ResetWorkspaceDialog.vue';
 import VariableSection from '~/components/VariableSection.vue';
 
-const save = ref<OptionalFunction>(null);
-const saveAs = ref<OptionalFunction>(null);
-const open = ref<OptionalFunction>(null);
+const save = ref<NullableCallback>(null);
+const saveAs = ref<NullableCallback>(null);
+const open = ref<NullableCallback>(null);
+const resetHandle = ref<NullableCallback>(null);
+
 const fileName = ref('');
 
 const run = () => console.log('Run');
+
+const newProject = () => {
+    if(resetHandle.value) {
+        resetHandle.value();
+    }
+
+    useChrStore().$reset();
+};
 
 useHead({
     title: computed(() => fileName.value.length === 0 ? 'CHR IDE' : `CHR IDE - ${fileName.value}`),
@@ -28,11 +39,14 @@ defineShortcuts({
             open.value();
         }
     },
+
     'meta_shift_s': () => {
         if(saveAs.value) {
             saveAs.value();
         }
     },
+
+    'meta_shift_n': () => showResetDialog.value = true,
 });
 
 onMounted(() => {
@@ -43,16 +57,20 @@ onMounted(() => {
 
     watch(fsFileName, () => fileName.value = fsFileName.value);
 });
+
+const showResetDialog = ref(false);
 </script>
 
 <template>
     <div class="flex flex-col h-screen">
-        <AppHeader :open="open" :save="save" :save-as="saveAs" :run="run" :file-name="fileName"/>
+        <AppHeader :open="open" :save="save" :save-as="saveAs" :new-project="() => showResetDialog = true" :run="run" :file-name="fileName"/>
 
         <main class="grid grid-cols-3 grow">
             <CodeSection/>
             <ConstraintStoreSection/>
             <VariableSection/>
         </main>
+
+        <ResetWorkspaceDialog v-model:open="showResetDialog" :new-project="newProject"/>
     </div>
 </template>
