@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/web-manifest.json",
+    "short_name": "CHR",
+    "name": "CHR IDE",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/logo.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#615fff",
+    "background_color": "#000000"
+}
