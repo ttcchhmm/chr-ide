@@ -3,47 +3,51 @@ import CodeSection from '~/components/CodeSection.vue';
 import ConstraintStoreSection from '~/components/ConstraintStoreSection.vue';
 import VariableSection from '~/components/VariableSection.vue';
 
-useHead({
-    title: 'CHR IDE',
-});
-
-const filesystem = ref({
-    save: null as OptionalFunction,
-    saveAs: null as OptionalFunction,
-    open: null as OptionalFunction,
-});
+const save = ref<OptionalFunction>(null);
+const saveAs = ref<OptionalFunction>(null);
+const open = ref<OptionalFunction>(null);
+const fileName = ref('');
 
 const run = () => console.log('Run');
+
+useHead({
+    title: computed(() => fileName.value.length === 0 ? 'CHR IDE' : `CHR IDE - ${fileName.value}`),
+});
 
 defineShortcuts({
     'meta_shift_r': run,
 
     'meta_s': () => {
-        if(filesystem.value.save) {
-            filesystem.value.save()
+        if(save.value) {
+            save.value();
         }
     },
 
     'meta_o': () => {
-        if(filesystem.value.open) {
-            filesystem.value.open()
+        if(open.value) {
+            open.value();
         }
     },
     'meta_shift_s': () => {
-        if(filesystem.value.saveAs) {
-            filesystem.value.saveAs()
+        if(saveAs.value) {
+            saveAs.value();
         }
     },
 });
 
 onMounted(() => {
-    filesystem.value = useFilesystem();
+    const { save: fsSave, saveAs: fsSaveAs, open: fsOpen, fileName: fsFileName } = useFilesystem();
+    save.value = fsSave;
+    saveAs.value = fsSaveAs;
+    open.value = fsOpen;
+
+    watch(fsFileName, () => fileName.value = fsFileName.value);
 });
 </script>
 
 <template>
     <div class="flex flex-col h-screen">
-        <AppHeader :filesystem="filesystem" :run="run"/>
+        <AppHeader :open="open" :save="save" :save-as="saveAs" :run="run" :file-name="fileName"/>
 
         <main class="grid grid-cols-3 grow">
             <CodeSection/>

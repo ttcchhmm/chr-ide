@@ -1,20 +1,21 @@
 <script setup lang="ts">
 const props = defineProps<{
-    filesystem: {
-        saveAs: OptionalFunction,
-        open: OptionalFunction,
-        save: OptionalFunction,
-    },
-
+    saveAs: OptionalFunction,
+    open: OptionalFunction,
+    save: OptionalFunction,
     run: () => void,
+    fileName: string,
 }>();
 </script>
 
 <template>
     <header class="flex justify-between p-4 border-b items-center">
         <div class="flex">
-            <NuxtImg src="/logo.png" height="32" width="32" class="rounded-[50%]" alt=""/>
-            <h1 class="text-2xl font-bold pl-2">CHR IDE</h1>
+            <NuxtImg src="/logo.png" height="48" width="48" class="rounded-[50%]" alt=""/>
+            <div class="pl-2 flex flex-col justify-center">
+                <h1 class="text-2xl font-bold">CHR IDE</h1>
+                <p v-if="fileName.length !== 0" class="text-xs">{{ props.fileName }}</p>
+            </div>
         </div>
 
         <div>
@@ -33,8 +34,8 @@ const props = defineProps<{
                     </template>
                 </UPopover>
 
-                <UPopover v-if="props.filesystem.save" mode="hover" :open-delay="500">
-                    <UButton icon="i-lucide-save" @click="props.filesystem.save">Save</UButton>
+                <UPopover v-if="props.save" mode="hover" :open-delay="500">
+                    <UButton icon="i-lucide-save" @click="props.save">Save</UButton>
 
                     <template #content>
                         <span class="p-1 flex items-center">
@@ -45,8 +46,8 @@ const props = defineProps<{
                     </template>
                 </UPopover>
 
-                <UPopover v-if="props.filesystem.saveAs" mode="hover" :open-delay="500">
-                    <UButton icon="i-lucide-save-all" @click="props.filesystem.saveAs">Save as</UButton>
+                <UPopover v-if="props.saveAs" mode="hover" :open-delay="500">
+                    <UButton icon="i-lucide-save-all" @click="props.saveAs">Save as</UButton>
 
                     <template #content>
                         <span class="p-1 flex items-center">
@@ -59,8 +60,8 @@ const props = defineProps<{
                     </template>
                 </UPopover>
 
-                <UPopover v-if="props.filesystem.open" mode="hover" :open-delay="500">
-                    <UButton icon="i-lucide-folder-open" @click="props.filesystem.open">Open</UButton>
+                <UPopover v-if="props.open" mode="hover" :open-delay="500">
+                    <UButton icon="i-lucide-folder-open" @click="props.open">Open</UButton>
 
                     <template #content>
                         <span class="p-1 flex items-center">

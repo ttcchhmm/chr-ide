@@ -14,7 +14,7 @@ declare global {
         /**
          * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker
          */
-        showOpenFilePicker?: (options?: FilePickerOptions) => Promise<FileSystemFileHandle>;
+        showOpenFilePicker?: (options?: FilePickerOptions) => Promise<FileSystemFileHandle[]>;
 
         /**
          * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker
@@ -37,15 +37,22 @@ const options = {
 
 export const useFilesystem = () => {
     const chrStore = useChrStore();
+    const fileName = ref('');
 
     if('showOpenFilePicker' in window) {
         let handle: FileSystemFileHandle | null = null;
         
         const getOpenHandle = async () => {
-            return await window.showOpenFilePicker!(options);
+            const handle = (await window.showOpenFilePicker!(options))[0];
+            fileName.value = (await handle.getFile()).name;
+
+            return handle;
         };
         const getSaveHandle = async () => {
-            return await window.showSaveFilePicker!(options);
+            const handle = await window.showSaveFilePicker!(options);
+            fileName.value = (await handle.getFile()).name;
+
+            return handle;
         };
 
         const saveToHandle = async () => {
@@ -54,6 +61,12 @@ export const useFilesystem = () => {
             const writable = await handle!.createWritable();
             await writable.write(json);
             await writable.close();
+
+            useToast().add({
+                title: 'File saved!',
+                description: `Saved as ${fileName.value}.`,
+                color: 'success',
+            });
         }
 
         return {
@@ -76,6 +89,8 @@ export const useFilesystem = () => {
                 const json = JSON.parse(await (await handle.getFile()).text());
                 chrStore.$patch(json);
             },
+
+            fileName,
         };
     } else {
         return {
@@ -103,6 +118,8 @@ export const useFilesystem = () => {
                 const json = JSON.parse(await openFileClassic());
                 chrStore.$patch(json);
             },
+
+            fileName,
         };
     }
 };
