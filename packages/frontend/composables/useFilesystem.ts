@@ -17,12 +17,15 @@ declare global {
         showOpenFilePicker?: (options?: FilePickerOptions) => Promise<FileSystemFileHandle[]>;
 
         /**
-         * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker
+         * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker
          */
         showSaveFilePicker?: (options?: FilePickerOptions) => Promise<FileSystemFileHandle>;
     }
 };
 
+/**
+ * Common options for the file picker.
+ */
 const options = {
     types: [
         {
@@ -35,19 +38,32 @@ const options = {
     multiple: false,
 };
 
+/**
+ * Get functions to access a file on the filesystem.
+ * @returns Functions to access a file on the filesystem.
+ */
 export const useFilesystem = () => {
     const chrStore = useChrStore();
     const fileName = ref('');
 
-    if('showOpenFilePicker' in window) {
+    if('showOpenFilePicker' in window) { // Current browser supports the filesystem API
         let handle: FileSystemFileHandle | null = null;
         
+        /**
+         * Open a file from the filesystem.
+         * @returns A file handle
+         */
         const getOpenHandle = async () => {
             const handle = (await window.showOpenFilePicker!(options))[0];
             fileName.value = (await handle.getFile()).name;
 
             return handle;
         };
+
+        /**
+         * Create a file on the filesystem.
+         * @returns A file handle
+         */
         const getSaveHandle = async () => {
             const handle = await window.showSaveFilePicker!(options);
             fileName.value = (await handle.getFile()).name;
@@ -55,6 +71,9 @@ export const useFilesystem = () => {
             return handle;
         };
 
+        /**
+         * Save the current state to the filesystem.
+         */
         const saveToHandle = async () => {
             const json = JSON.stringify(chrStore.getSaveFormat());
 
@@ -92,9 +111,9 @@ export const useFilesystem = () => {
 
             fileName,
         };
-    } else {
+    } else { // Fallback for browsers without filesystem API support
         return {
-            save: () => {
+            save: () => { // Create a link with the download and click it
                 const url = URL.createObjectURL(new Blob([JSON.stringify(chrStore.getSaveFormat())], {
                     type: 'application/json',
                 }));
@@ -119,7 +138,7 @@ export const useFilesystem = () => {
                 chrStore.$patch(json);
             },
 
-            fileName,
+            fileName, // Will always be blank
         };
     }
 };

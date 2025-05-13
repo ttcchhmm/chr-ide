@@ -1,9 +1,28 @@
 <script setup lang="ts">
 const props = defineProps<{
-    saveAs: OptionalFunction,
-    open: OptionalFunction,
-    save: OptionalFunction,
+    /**
+     * Function called when the "Save as" button is clicked.
+     */
+    saveAs: NullableCallback,
+
+    /**
+     * Function called when the "Open" button is clicked.
+     */
+    open: NullableCallback,
+
+    /**
+     * Function called when the "Save" button is clicked.
+     */
+    save: NullableCallback,
+
+    /**
+     * Function called when the "Run" button is clicked.
+     */
     run: () => void,
+
+    /**
+     * The current open filename.
+     */
     fileName: string,
 }>();
 </script>
@@ -18,7 +37,10 @@ const props = defineProps<{
             </div>
         </div>
 
-        <div>
+        <!-- Action buttons -->
+        <section>
+            <h2 class="sr-only">IDE controls</h2>
+
             <UButtonGroup>
                 <UPopover mode="hover" :open-delay="500">
                     <UButton icon="i-lucide-play" @click="props.run">Run</UButton>
@@ -72,8 +94,8 @@ const props = defineProps<{
                     </template>
                 </UPopover>
             </UButtonGroup>
-        </div>
+        </section>
 
-        <UButton icon="i-lucide-info">About</UButton>
+        <AboutDialog/>
     </header>
 </template>
