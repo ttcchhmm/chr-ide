@@ -50,10 +50,11 @@ defineShortcuts({
 });
 
 onMounted(() => {
-    const { save: fsSave, saveAs: fsSaveAs, open: fsOpen, fileName: fsFileName } = useFilesystem();
+    const { save: fsSave, saveAs: fsSaveAs, open: fsOpen, fileName: fsFileName, resetHandle: fsResetHandle } = useFilesystem();
     save.value = fsSave;
     saveAs.value = fsSaveAs;
     open.value = fsOpen;
+    resetHandle.value = fsResetHandle;
 
     watch(fsFileName, () => fileName.value = fsFileName.value);
 });
