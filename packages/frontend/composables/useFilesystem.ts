@@ -112,6 +112,13 @@ export const useFilesystem = () => {
             fileName,
         };
     } else { // Fallback for browsers without filesystem API support
+        // Warn the user
+        useToast().add({
+            title: 'Limited file access',
+            description: 'Your browser does not support the filesystem API. Reading and writing to your local filesystem is limited.',
+            color: 'error',
+        });
+
         return {
             save: () => { // Create a link with the download and click it
                 const url = URL.createObjectURL(new Blob([JSON.stringify(chrStore.getSaveFormat())], {
