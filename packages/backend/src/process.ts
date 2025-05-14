@@ -127,8 +127,6 @@ export const program = async (directory: string, onStderr: (line: string) => voi
         { cwd: directory }
     );
 
-    // TRACE output is on stderr
-    p.stderr.on('data', onStderr);
-
+    p.stdout.on('data', (b: Buffer | string) => onStderr(b.toString()));
     return await waitForProcessEnd(p) === 0;
 };

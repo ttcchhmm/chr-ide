@@ -8,7 +8,7 @@ import verbose from "./utils/verbose.js";
  * @returns A function that can get input from a CHR program and parse it.
  */
 export default (socket: CHRSocket) => (input: string) => {
-    console.log(`Received input from ${socket.handshake.address}: ${input}`);
+    console.log(`Received input from ${socket.handshake.address}: "${input}"`);
     if(input.startsWith('TRACE [')) {
         const batches = input
             .replace(/ +/g, ' ') // Fuse multiple spaces into one
@@ -22,6 +22,7 @@ export default (socket: CHRSocket) => (input: string) => {
             verbose(`${socket.handshake.address}: ${tokens.join(' | ')}`);
             const [type, ...rest] = tokens;
             const message = rest.join(' ');
+            console.log(`TRACE PARSER: ${type} ${message}`);
 
             switch (type) {
 
