@@ -1,5 +1,5 @@
 import Config from './config.js';
-import { mkdir, writeFile, readdir } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
 
 /**
@@ -18,6 +18,21 @@ const verboseProcessOutput = (process: ChildProcess) => {
         process.stdout?.on('data', (output: string) => console.log(`[STDOUT]: ${output}`));
         process.stderr?.on('data', (output: string) => console.log(`[STDERR]: ${output}`));
     }
+};
+
+
+/**
+ * Setup the compilation environment.
+ * 
+ * @param code - The code to compile.
+ * @returns A CHRPP code file ready to be compile.
+ */
+export const PrepareFile = async (code: string) => {
+
+    let fileContent = await readFile("/home/qraim/chr-ide/packages/backend/src/skeleton.cpp", 'utf-8');
+    fileContent = fileContent.replace("//Rules", code);
+
+    return fileContent;
 };
 
 /**
@@ -67,6 +82,7 @@ export const chrppc = async (directory: string) => {
 
     return finishedProperly;
 };
+
 
 /**
  * Run the C++ compiler.

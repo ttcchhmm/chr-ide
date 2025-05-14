@@ -22,49 +22,11 @@ socket.on('finished', () => {
 
 socket.on('connect', () => {
     socket.emit('pushJob', `
-#include <iostream>
-#include <string>
-#include <chrpp.hh>
 
-/*
-<CHR name="Test">
-    <chr_constraint>    cat(?std::string), person(?std::string),
-                        dog(?std::string), sleepy(?std::string),
-                        lazy(?std::string)
-    cat("bounty")   <=> success();;
-    cat(_)          <=> failure();;
- 
-    person("jack")  <=> success();;
-    person(_)       <=> failure();;
- 
-    dog("ginger")   <=> success();;
-    dog(_)          <=> failure();;
- 
-    sleepy("jack")  <=> success();;
-    sleepy("bounty")<=> success();;
-    sleepy(_)       <=> failure();;
- 
-    lazy(X) <=> cat(X) ; sleepy(X);;
-</CHR>
- */
+        <chr_constraint> syracuse(?unsigned long int, ?unsigned long int)
+        stop @ syracuse(1LU, C) <=> C %= 0;;
+        even_case @ syracuse(R,C) <=> R % 2 == 0 | syracuse(R / 2,C1), C %= C1 + 1;;
+        odd_case @ syracuse(R,C) <=> R % 2 == 1 | syracuse(3 * R + 1,C1), C %= C1 + 1;;
 
-int main() {
-    auto space = Test::create();
-    if (space->lazy(std::string("bounty"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
- 
-    if (space->lazy(std::string("jack"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
- 
-    if (space->lazy(std::string("ginger"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
-    return 0;
-}
         `);
 });
