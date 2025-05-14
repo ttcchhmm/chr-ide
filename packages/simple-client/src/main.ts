@@ -20,6 +20,21 @@ socket.on('finished', () => {
     exit(0);
 });
 
+socket.on('parsing_goal', (goal) => console.log(`Goal: ${goal}`));
+socket.on('parsing_call', (call) => console.log(`Call: ${call}`));
+socket.on('parsing_try', (try_) => console.log(`Try: ${try_}`));
+socket.on('parsing_exit', (exit) => console.log(`Exit: ${exit}`));
+socket.on('parsing_insert', (insert) => console.log(`Insert: ${insert}`));
+socket.on('parsing_partner', (partner) => console.log(`Partner: ${partner}`));
+socket.on('parsing_commit', (commit) => console.log(`Commit: ${commit}`));
+socket.on('parsing_fail', (fail) => console.log(`Fail: ${fail}`));
+socket.on('parsing_wake', (wake) => console.log(`Wake: ${wake}`));
+socket.on('parsing_remove', (remove) => console.log(`Remove: ${remove}`));
+socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
+socket.on('parsing_history', (history) => console.log(`History: ${history}`));
+
+
+
 socket.on('connect', () => {
     socket.emit('pushJob', `
 
