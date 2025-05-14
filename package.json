@@ -34,5 +34,5 @@
     "dev:frontend": "npm run dev -w @chr-ide/frontend",
     "dev:simple-client": "npm run dev -w @chr-ide/simple-client",
     "prepare": "husky || true"
-  }
+    }
 }

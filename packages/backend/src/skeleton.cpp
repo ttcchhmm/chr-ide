@@ -14,7 +14,7 @@ int main() {
 	auto space = CHRPP::create();
 	chr::Logical_var< unsigned long int > Res;
 
-	CHR_RUN(
+	CHR_RUN( 
 		space->syracuse(23,Res);
 	)
 

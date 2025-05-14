@@ -29,7 +29,7 @@ const verboseProcessOutput = (process: ChildProcess) => {
  */
 export const PrepareFile = async (code: string) => {
 
-    let fileContent = await readFile("/home/qraim/chr-ide/packages/backend/src/skeleton.cpp", 'utf-8');
+    let fileContent = await readFile("./src/skeleton.cpp", 'utf-8');
     fileContent = fileContent.replace("//Rules", code);
 
     return fileContent;
