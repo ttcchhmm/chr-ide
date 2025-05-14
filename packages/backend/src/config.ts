@@ -47,6 +47,13 @@ const config = Object.freeze({
      * Set by the `CHR_IDE_VERBOSE` environment variable. Should be set to `true` to enable it. Defaults to false in production, true in development.
      */
     verbose: process.env.CHR_IDE_VERBOSE === undefined ? process.env.NODE_ENV !== 'production' : process.env.CHR_IDE_VERBOSE === 'true',
+
+    /**
+     * Origins allowed to contact this server. Used for the `Access-Control-Allow-Origin` CORS header.
+     * 
+     * Set by the `CHR_IDE_ALLOWED_ORIGINS` environment variable. Should be set to a list of allowed origins, separated by commas. Defaults to `http://localhost:3000,http://localhost:4000`.
+     */
+    allowedOrigins: process.env.CHR_IDE_ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:4000',
 });
 
 export default config;
