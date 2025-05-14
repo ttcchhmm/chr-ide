@@ -47,14 +47,25 @@ export const chrppc = async (directory: string) => {
         `${Config.chrppcInstallRoot}/usr/local/bin/chrppc`,
         [
             '--trace',
+            '-sout',
             './main.chrpp',
+
         ],
         { cwd: directory }
     );
 
+    let code = '';
+    transpiler.stdout?.on('data', (output: string) => code += output);
+
     verboseProcessOutput(transpiler);
 
-    return await waitForProcessEnd(transpiler) === 0;
+    const finishedProperly = await waitForProcessEnd(transpiler) === 0;
+
+    if(finishedProperly) {
+        await writeFile(`${directory}/main.cpp`, code);
+    }
+
+    return finishedProperly;
 };
 
 /**
@@ -67,7 +78,7 @@ export const cpp = async (directory: string) => {
     const compiler = spawn(
         Config.cppCompiler,
         [
-            '--std=c++20', // TODO: issues with gcc?
+            '--std=c++17', // TODO: issues with gcc?
             '-O0',
             '-o',
             'program',
@@ -75,7 +86,7 @@ export const cpp = async (directory: string) => {
             '-I.',
             '-DENABLE_TRACE',
 
-            ...Config.extraCompilerFlags.split(' '),
+            ...Config.extraCompilerFlags.split(' ').filter(flag => flag.length > 0),
             ...(await readdir(directory)).filter(f => f.endsWith('.cpp'))
         ],
         { cwd: directory }
