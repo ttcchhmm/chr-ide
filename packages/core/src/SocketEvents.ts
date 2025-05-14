@@ -44,8 +44,9 @@ export type ClientToServerEvents = {
      * Emitted when the user wants to run the program.
      * 
      * @param code The code to run.
+     * @param constraints The constraints that should be pre-triggered.
      */
-    pushJob: (code: string) => void;
+    pushJob: (code: string, constraints: string[]) => void;
 };
 
 export type InterServerEvents = object;

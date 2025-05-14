@@ -34,4 +34,22 @@ export default defineNuxtConfig({
       ],
     },
   },
+
+  runtimeConfig: {
+    public: {
+      host: '',
+    },
+  },
+
+  devServer: {
+    port: 4000,
+  },
+
+  $development: {
+    runtimeConfig: {
+      public: {
+        host: 'http://localhost:3000',
+      },
+    },
+  },
 });

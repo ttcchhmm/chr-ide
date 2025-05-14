@@ -11,6 +11,10 @@ const resetHandle = ref<NullableCallback>(null);
 
 const fileName = ref('');
 
+const showResetDialog = ref(false);
+
+const chrStore = useChrStore();
+
 const run = () => console.log('Run');
 
 const newProject = () => {
@@ -18,7 +22,7 @@ const newProject = () => {
         resetHandle.value();
     }
 
-    useChrStore().$reset();
+    useChrStore().reset();
 };
 
 useHead({
@@ -57,9 +61,26 @@ onMounted(() => {
     resetHandle.value = fsResetHandle;
 
     watch(fsFileName, () => fileName.value = fsFileName.value);
+
+    chrStore.setupSocket(useSocket());
 });
 
-const showResetDialog = ref(false);
+const { disconnected } = storeToRefs(chrStore);
+watch(disconnected, () => {
+    const toast = useToast();
+
+    if(disconnected.value) {
+        toast.add({
+            title: 'Connection lost',
+            color: 'error',
+        });
+    } else {
+        toast.add({
+            title: 'Connected',
+            color: 'success',
+        });
+    }
+});
 </script>
 
 <template>

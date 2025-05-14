@@ -66,5 +66,5 @@ int main() {
         std::cout << "false" << std::endl;
     return 0;
 }
-        `);
+        `, []);
 });
