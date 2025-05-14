@@ -66,7 +66,7 @@ const showResetDialog = ref(false);
     <div class="flex flex-col h-screen">
         <AppHeader :open="open" :save="save" :save-as="saveAs" :new-project="() => showResetDialog = true" :run="run" :file-name="fileName"/>
 
-        <main class="grid grid-cols-3 grow">
+        <main class="grid grid-cols-3 grow h-full">
             <CodeSection/>
             <ConstraintStoreSection/>
             <VariableSection/>

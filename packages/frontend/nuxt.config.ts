@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/eslint',
     '@nuxt/fonts',
-    'nuxt-monaco-editor',
     '@pinia/nuxt',
     '@nuxt/image',
   ],
