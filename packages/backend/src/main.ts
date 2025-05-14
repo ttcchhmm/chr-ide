@@ -12,7 +12,7 @@ const app = express();
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 const server = createServer(app);
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
+const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, { connectionStateRecovery: { maxDisconnectionDuration: 2 * 60 * 1000 } });
 
 // Serve the frontend
 app.use(express.static('./web'));
