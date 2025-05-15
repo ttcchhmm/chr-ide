@@ -1,34 +1,41 @@
 <script setup lang="ts">
 const props = defineProps<{
     /**
-     * Function called when the "Save as" button is clicked.
-     */
-    saveAs: NullableCallback,
-
-    /**
-     * Function called when the "Open" button is clicked.
-     */
-    open: NullableCallback,
-
-    /**
-     * Function called when the "Save" button is clicked.
-     */
-    save: NullableCallback,
-
-    /**
-     * Function called when the "New" button is clicked.
-     */
-    newProject: () => void,
-
-    /**
-     * Function called when the "Run" button is clicked.
-     */
-    run: () => void,
-
-    /**
      * The current open filename.
      */
     fileName: string,
+
+    /**
+     * Whether the "save as" operation is supported.
+     */
+    saveAsSupported: boolean,
+}>();
+
+const emit = defineEmits<{
+    /**
+     * Emitted when the "Save as" button is pressed.
+     */
+    (e: 'saveAs'): void;
+
+    /**
+     * Emitted when the "Open" button is pressed.
+     */
+    (e: 'open'): void;
+
+    /**
+     * Emitted when the "Save" button is pressed.
+     */
+    (e: 'save'): void;
+
+    /**
+     * Emitted when the "New" button is pressed.
+     */
+    (e: 'newProject'): void;
+
+    /**
+     * Emitted when the "Run" button is pressed.
+     */
+    (e: 'run'): void;
 }>();
 
 const { running } = storeToRefs(useChrStore());
@@ -51,7 +58,7 @@ const { running } = storeToRefs(useChrStore());
 
                 <UButtonGroup>
                     <UPopover mode="hover" :open-delay="500">
-                        <UButton icon="i-lucide-play" :disabled="running" @click="props.run">Run</UButton>
+                        <UButton icon="i-lucide-play" :disabled="running" @click="() => emit('run')">Run</UButton>
 
                         <template #content>
                             <span class="p-1 flex items-center">
@@ -65,7 +72,7 @@ const { running } = storeToRefs(useChrStore());
                     </UPopover>
 
                     <UPopover mode="hover" :open-delay="500">
-                        <UButton icon="i-lucide-plus" @click="props.newProject">New</UButton>
+                        <UButton icon="i-lucide-plus" @click="() => emit('newProject')">New</UButton>
 
                         <template #content>
                             <span class="p-1 flex items-center">
@@ -76,8 +83,8 @@ const { running } = storeToRefs(useChrStore());
                         </template>
                     </UPopover>
 
-                    <UPopover v-if="props.save" mode="hover" :open-delay="500">
-                        <UButton icon="i-lucide-save" @click="props.save">Save</UButton>
+                    <UPopover mode="hover" :open-delay="500">
+                        <UButton icon="i-lucide-save" @click="() => emit('save')">Save</UButton>
 
                         <template #content>
                             <span class="p-1 flex items-center">
@@ -88,8 +95,8 @@ const { running } = storeToRefs(useChrStore());
                         </template>
                     </UPopover>
 
-                    <UPopover v-if="props.saveAs" mode="hover" :open-delay="500">
-                        <UButton icon="i-lucide-save-all" @click="props.saveAs">Save as</UButton>
+                    <UPopover v-if="props.saveAsSupported" mode="hover" :open-delay="500">
+                        <UButton icon="i-lucide-save-all" @click="() => emit('saveAs')">Save as</UButton>
 
                         <template #content>
                             <span class="p-1 flex items-center">
@@ -102,8 +109,8 @@ const { running } = storeToRefs(useChrStore());
                         </template>
                     </UPopover>
 
-                    <UPopover v-if="props.open" mode="hover" :open-delay="500">
-                        <UButton icon="i-lucide-folder-open" @click="props.open">Open</UButton>
+                    <UPopover mode="hover" :open-delay="500">
+                        <UButton icon="i-lucide-folder-open" @click="() => emit('open')">Open</UButton>
 
                         <template #content>
                             <span class="p-1 flex items-center">

@@ -17,6 +17,12 @@ const chrStore = useChrStore();
 
 const run = () => console.log('Run');
 
+const invokeIfPossible = (func: (() => void) | null) => {
+    if(func) {
+        func();
+    }
+};
+
 const newProject = () => {
     if(resetHandle.value) {
         resetHandle.value();
@@ -85,7 +91,7 @@ watch(disconnected, () => {
 
 <template>
     <div class="flex flex-col h-screen">
-        <AppHeader :open="open" :save="save" :save-as="saveAs" :new-project="() => showResetDialog = true" :run="run" :file-name="fileName"/>
+        <AppHeader :file-name="fileName" :save-as-supported="saveAs !== null" @open="() => invokeIfPossible(open)" @save="invokeIfPossible(save)" @save-as="invokeIfPossible(saveAs)" @new-project="() => showResetDialog = true" @run="run"/>
 
         <main class="grid grid-cols-3 grow h-full">
             <CodeSection/>
