@@ -6,6 +6,22 @@ const erase = (index: number) => {
     chrStore.constraints.splice(index,1)
 }
 
+const submit = (input: string) => {
+    chrStore.constraints = chrStore.constraints.concat(
+        input
+            .split(/\),\s*/g)
+            .map(c => c.trim())
+            .filter(c => c !== ',' && c.length !== 0)
+            .map((c) => {
+                if(c.endsWith(')')) {
+                    return c;
+                } else {
+                    return `${c})`;
+                }
+            })
+    );
+};
+
 const { constraints } = storeToRefs(useChrStore());
 </script>
 
@@ -13,7 +29,7 @@ const { constraints } = storeToRefs(useChrStore());
     <section class="border-r p-4">
         <h2 class="text-xl font-bold pb-4">Constraint store</h2>
 
-        <InputWithButton label="Constraint" placeholder="Add a constraint..." @submit="(input) => chrStore.constraints.push(input)"/>
+        <InputWithButton label="Constraint" placeholder="Add a constraint..." @submit="submit"/>
 
         <label for="constraints-list" class="sr-only">Constraints list</label>
         <ol class="pt-4">
