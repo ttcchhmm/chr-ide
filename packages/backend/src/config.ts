@@ -5,11 +5,11 @@ import { tmpdir } from 'node:os'
  */
 const config = Object.freeze({
     /**
-     * Port used by the WebSocket server.
+     * Port used by the server.
      * 
      * Set by the `CHR_IDE_WS_PORT` environment variable, defaults to 3000.
      */
-    wsPort: process.env.CHR_IDE_WS_PORT ?? '3000',
+    port: process.env.CHR_IDE_PORT ?? '3000',
 
     /**
      * Directory where `chrppc` is installed.

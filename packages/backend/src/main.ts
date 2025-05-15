@@ -27,4 +27,4 @@ app.use(express.static('./web'));
 
 setup(io);
 
-server.listen(Config.wsPort, () => console.log(`Server running on ${Config.wsPort}`));
+server.listen(Config.port, () => console.log(`Server running on ${Config.port}`));

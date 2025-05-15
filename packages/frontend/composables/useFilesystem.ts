@@ -122,6 +122,14 @@ export const useFilesystem = () => {
             title: 'Limited file access',
             description: 'Your browser does not support the filesystem API. Reading and writing to your local filesystem is limited.',
             color: 'error',
+            actions: [
+                {
+                    icon: 'i-lucide-square-arrow-out-up-right',
+                    label: 'Learn more',
+                    color: 'neutral',
+                    onClick: () => { window.open('https://github.com/ttcchhmm/chr-ide/blob/main/README.md#browser-support', '_blank') },
+                },
+            ],
         });
 
         return {

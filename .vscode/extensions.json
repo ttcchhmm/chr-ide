@@ -4,6 +4,7 @@
     "dbaeumer.vscode-eslint",
     "EditorConfig.EditorConfig",
     "github.vscode-github-actions",
-    "ms-azuretools.vscode-containers"
+    "ms-azuretools.vscode-containers",
+    "bradlc.vscode-tailwindcss"
   ]
 }
