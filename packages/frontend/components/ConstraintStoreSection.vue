@@ -19,7 +19,7 @@ const { constraints } = storeToRefs(useChrStore());
         <ol class="pt-4">
             <li v-for="(constraint,index) in constraints" :key="constraint" class="pt-2 pb-2 border-b border-gray-300 flex">
                 <UButton icon="i-lucide-x" variant="ghost" @click="erase(index)">
-                    <span class="sr-only">Erase the watch</span>
+                    <span class="sr-only">Erase the constraint</span>
                 </UButton>
                 <p class="font-bold pr-2">{{ constraint }}</p>
             </li>
