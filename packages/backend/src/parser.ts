@@ -63,8 +63,8 @@ export default (socket: CHRSocket) => (input: string) => {
                 case 'HISTORY':
                     socket.emit('parsing_history', message);
                     break;
-                case 'PROGRAM':
-                    socket.emit('parsing_prog', message);
+                case 'RULES':
+                    socket.emit('parsing_rules', message);
                     break;
                 case 'VAR':
                     socket.emit('parsing_var', message);

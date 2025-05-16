@@ -3,9 +3,9 @@
 import { io, type Socket } from "socket.io-client";
 import { exit } from 'node:process';
 import type { ServerToClientEvents, ClientToServerEvents } from "@chr-ide/core";
+import { CHRVariable } from "@chr-ide/core";
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3000');
-
 socket.on('error', (step) => {
     console.error(`Compilation failed at step ${step}`);
     exit(1);
@@ -32,13 +32,12 @@ socket.on('parsing_wake', (wake) => console.log(`Wake: ${wake}`));
 socket.on('parsing_remove', (remove) => console.log(`Remove: ${remove}`));
 socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
 socket.on('parsing_history', (history) => console.log(`History: ${history}`));
-socket.on('parsing_prog', (history) => console.log(`Prog: ${history}`));
+socket.on('parsing_rules', (history) => console.log(`Prog: ${history}`));
 socket.on('parsing_var', (history) => console.log(`Var: ${history}`));
 
 
-
 socket.on('connect', () => {
-    socket.emit('pushJob', `
+	socket.emit('pushJob', `
 
 		<chr_constraint> acker(?int,?int,?int)
 		
@@ -50,5 +49,5 @@ socket.on('connect', () => {
 							acker(X - 1, A1, A);;
 
 
-        `, ["acker(2,3, 5)"]);
+		`, ["acker(2,3, 5)"], [{constraint: "acker", position: 1, value : "5"} as CHRVariable] );
 });

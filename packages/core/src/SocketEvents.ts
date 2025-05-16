@@ -1,3 +1,5 @@
+import { CHRVariable } from "CHRVariable.js";
+
 /**
  * Possible error steps during the compilation process.
  */
@@ -49,7 +51,7 @@ export type ServerToClientEvents = {
     parsing_backtrack: (message?: string) => void;
     parsing_history: (message?: string) => void;
     parsing_all: (message?: string) => void;
-    parsing_prog: (message?: string) => void;
+    parsing_rules: (message?: string) => void;
     parsing_var: (message?: string) => void;
 
 };
@@ -64,7 +66,7 @@ export type ClientToServerEvents = {
      * @param code The code to run.
      * @param constraints The constraints that should be pre-triggered.
      */
-    pushJob: (code: string, constraints: string[]) => void;
+    pushJob: (code: string, constraints: string[], watch : CHRVariable[]) => void;
 };
 
 export type InterServerEvents = object;
