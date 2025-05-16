@@ -19,13 +19,17 @@ const cancel = () => {
     exampleStore.example = null;
     emit('update:open', false);
 }
+
+defineShortcuts({
+    'escape': () => cancel(),
+});
 </script>
 
 <template>
-    <UModal :open="open" title="Reset the workspace?">
+    <UModal :open="open" :close="false" title="Reset the workspace?">
         <template #body>
-            <p class="pb-4">Your current workspace will be reset.</p>
-            <p v-if="exampleStore.example">"{{ exampleStore.example.name }}" will be loaded.</p>
+            <p>Your current workspace will be reset.</p>
+            <p v-if="exampleStore.example" class="pt-4">"{{ exampleStore.example.name }}" will be loaded.</p>
         </template>
 
         <template #footer>
