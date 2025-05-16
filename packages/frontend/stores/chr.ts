@@ -1,5 +1,10 @@
 import type { CHRVariable } from '@chr-ide/core';
 
+/**
+ * File format supported by this version of CHR IDE.
+ */
+const WORKSPACE_FILE_FORMAT_VERSION = 0;
+
 export const useChrStore = defineStore('chr', {
     state: () => ({
         /**
@@ -8,12 +13,7 @@ export const useChrStore = defineStore('chr', {
         code: '',
 
         /**
-         * Variables added to the watch list.
-         */
-        watchedVariables: [] as string[],
-
-        /**
-         * Variables history.
+         * Watched variables.
          */
         variables: [] as CHRVariable[],
 
@@ -45,9 +45,9 @@ export const useChrStore = defineStore('chr', {
         getSaveFormat() {
             return {
                 code: this.code,
-                watchedVariables: this.watchedVariables,
                 variables: this.variables,
                 constraints: this.constraints,
+                formatVersion: WORKSPACE_FILE_FORMAT_VERSION,
             };
         },
 

@@ -3,9 +3,14 @@
  */
 export type CHRVariable = {
     /**
-     * Name of the variable.
+     * Constraint containing the variable.
      */
-    name: string,
+    constraint: string,
+
+    /**
+     * Position of the variable in the constraint.
+     */
+    position: number,
 
     /**
      * The value of the variable.
