@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import CodeSection from '~/components/CodeSection.vue';
-import ConstraintStoreSection from '~/components/ConstraintStoreSection.vue';
-import ResetWorkspaceDialog from '~/components/ResetWorkspaceDialog.vue';
-import VariableSection from '~/components/VariableSection.vue';
-
 const save = ref<NullableCallback>(null);
 const saveAs = ref<NullableCallback>(null);
 const open = ref<NullableCallback>(null);
@@ -14,6 +9,7 @@ const fileName = ref('');
 const showResetDialog = ref(false);
 
 const chrStore = useChrStore();
+const exampleStore = useExampleStore();
 
 const run = () => console.log('Run');
 
@@ -28,7 +24,22 @@ const newProject = () => {
         resetHandle.value();
     }
 
-    useChrStore().reset();
+    chrStore.reset();
+    
+    if(exampleStore.example) {
+        chrStore.$patch({
+            code: exampleStore.example.code,
+            constraints: exampleStore.example.constraints,
+            variables: exampleStore.example.variables,
+        });
+
+        exampleStore.example = null;
+    }
+};
+
+const loadExample = (example: Example) => {
+    exampleStore.example = example;
+    showResetDialog.value = true;
 };
 
 useHead({
@@ -91,7 +102,7 @@ watch(disconnected, () => {
 
 <template>
     <div class="flex flex-col h-screen">
-        <AppHeader :file-name="fileName" :save-as-supported="saveAs !== null" @open="() => invokeIfPossible(open)" @save="invokeIfPossible(save)" @save-as="invokeIfPossible(saveAs)" @new-project="() => showResetDialog = true" @run="run"/>
+        <AppHeader :examples="examples" :file-name="fileName" :save-as-supported="saveAs !== null" @open="() => invokeIfPossible(open)" @save="invokeIfPossible(save)" @save-as="invokeIfPossible(saveAs)" @new-project="() => showResetDialog = true" @run="run" @load-example="loadExample"/>
 
         <main class="grid grid-cols-3 grow h-full">
             <CodeSection/>

@@ -12,17 +12,25 @@ const onNewWorkspace = () => {
     emit('update:open', false);
     props.newProject();
 }
+
+const exampleStore = useExampleStore();
+
+const cancel = () => {
+    exampleStore.example = null;
+    emit('update:open', false);
+}
 </script>
 
 <template>
     <UModal :open="open" title="Reset the workspace?">
         <template #body>
-            <p>Your current workspace will be reset.</p>
+            <p class="pb-4">Your current workspace will be reset.</p>
+            <p v-if="exampleStore.example">"{{ exampleStore.example.name }}" will be loaded.</p>
         </template>
 
         <template #footer>
             <div class="flex place-content-end w-full">
-                <UButton class="mr-4" color="neutral" @click="emit('update:open', false)">Cancel</UButton>
+                <UButton class="mr-4" color="neutral" @click="cancel">Cancel</UButton>
                 <UButton color="error" @click="onNewWorkspace">New workspace</UButton>
             </div>
         </template>
