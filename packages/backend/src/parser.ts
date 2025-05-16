@@ -9,7 +9,9 @@ import verbose from "./utils/verbose.js";
  */
 export default (socket: CHRSocket) => (input: string) => {
     if(input.startsWith('TRACE [')) {
+
         const batches = input
+            .replace(', ',',')
             .replace(/ +/g, ' ') // Fuse multiple spaces into one
             .split('\n') // Split the output line by line
             .filter(l => l.trim() !== '') // Remove empty lines
@@ -19,74 +21,60 @@ export default (socket: CHRSocket) => (input: string) => {
         
         batches.forEach(tokens => {
             verbose(`${socket.handshake.address}: ${tokens.join(' | ')}`);
+            const [type, ...rest] = tokens;
+            const message = rest.join(' ');
+            console.log(`TRACE PARSER: ${type} ${message}`);
+            
+            switch (type) {
 
-            switch(tokens[0]) {
-                case 'GOAL': {
-                    // TODO: finish the parser
+                case 'GOAL':
+                    socket.emit('parsing_goal', message);
                     break;
-                }
-
-                case 'CALL': {
-                    // TODO: finish the parser
+                case 'CALL':
+                    socket.emit('parsing_call', message);
                     break;
-                }
-
-                case 'TRY': {
-                    // TODO: finish the parser
+                case 'TRY':
+                    socket.emit('parsing_try', message);
                     break;
-                }
-
-                case 'EXIT': {
-                    // TODO: finish the parser
+                case 'EXIT':
+                    socket.emit('parsing_exit', message);
                     break;
-                }
-
-                case 'INSERT': {
-                    // TODO: finish the parser
+                case 'INSERT':
+                    socket.emit('parsing_insert', message);
                     break;
-                }
-
-                case 'PARTNER': {
-                    // TODO: finish the parser
+                case 'PARTNER':
+                    socket.emit('parsing_partner', message);
                     break;
-                }
-
-                case 'COMMIT': {
-                    // TODO: finish the parser
+                case 'COMMIT':
+                    socket.emit('parsing_commit', message);
                     break;
-                }
-
-                case 'FAIL': {
-                    // TODO: finish the parser
+                case 'FAIL':
+                    socket.emit('parsing_fail', message);
                     break;
-                }
-
-                case 'WAKE': {
-                    // TODO: finish the parser
+                case 'WAKE':
+                    socket.emit('parsing_wake', message);
                     break;
-                }
-
-                case 'REMOVE': {
-                    // TODO: finish the parser
+                case 'REMOVE':
+                    socket.emit('parsing_remove', message);
                     break;
-                }
-
-                case 'BACKTRACK': {
-                    // TODO: finish the parser
+                case 'BACKTRACK':
+                    socket.emit('parsing_backtrack', message);
                     break;
-                }
-
-                case 'HISTORY': {
-                    // TODO: finish the parser
+                case 'HISTORY':
+                    socket.emit('parsing_history', message);
                     break;
-                }
-
-                default: {
-                    console.error(`TRACE PARSER: Unknown token '${tokens[0]}', skipping`);
-                    socket.emit('error', 'parser', tokens[0]);
+                case 'PROGRAM':
+                    socket.emit('parsing_prog', message);
                     break;
-                }
+                case 'VAR':
+                    socket.emit('parsing_var', message);
+                    break;
+                default:
+                    console.error(`TRACE PARSER: Unknown token '${type}', skipping`);
+                    socket.emit('error', 'parser', type);
+                    break;
             }
+
         });
     }
 };

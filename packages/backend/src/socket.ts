@@ -1,11 +1,11 @@
 import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@chr-ide/core";
 import { DisconnectReason, type Server, type Socket } from "socket.io";
-import { chrppc, cpp, program, setupCompilation } from "./process.js";
+import { chrppc, cpp, prepareFile , program, setupCompilation } from "./process.js";
 import parser from "./parser.js";
-
+import { CHRVariable } from "@chr-ide/core";
 /**
  * Socket type for the CHR IDE server.
- */
+*/
 export type CHRSocket = Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>;
 
 /**
@@ -15,19 +15,19 @@ export type CHRSocket = Socket<ClientToServerEvents, ServerToClientEvents, Inter
  * @param code - The code to compile and run.
  */
 const onPushJob = (socket: CHRSocket) =>
-    async (code: string) => {
+    async (code: string, constraints: string[], watch: CHRVariable[]) => {
         console.log(`Received code from ${socket.handshake.address}`);
-
-        const directory = await setupCompilation(code);
+        const CHRPPCode = await prepareFile(code, constraints, watch);
+        const directory = await setupCompilation(CHRPPCode);
 
         socket.emit('transpiling');
-        if(await chrppc(directory)) {
+        if (await chrppc(directory)) {
             socket.emit('compiling');
 
-            if(await cpp(directory)) {
+            if (await cpp(directory)) {
                 socket.emit('running');
-                
-                if(await program(directory, parser(socket))) {
+
+                if (await program(directory, parser(socket))) {
                     socket.emit('finished');
                 } else {
                     socket.emit('error', 'program');
@@ -58,8 +58,9 @@ export const setup = (io: Server<ClientToServerEvents, ServerToClientEvents, Int
     io.on('connect', (socket) => {
         console.log(`New connection from ${socket.handshake.address}`);
 
-        // Listen for events from the client
         socket.on('disconnect', onDisconnect(socket));
-        socket.on('pushJob', onPushJob(socket));
+        socket.on('pushJob', (code: string, constraints: string[], watch : CHRVariable[]) => {
+           void onPushJob(socket)(code, constraints, watch);
+        });
     });
 };

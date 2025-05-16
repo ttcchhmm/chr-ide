@@ -20,51 +20,35 @@ socket.on('finished', () => {
     exit(0);
 });
 
+socket.on('parsing_goal', (goal) => console.log(`Goal: ${goal}`));
+socket.on('parsing_call', (call) => console.log(`Call: ${call}`));
+socket.on('parsing_try', (try_) => console.log(`Try: ${try_}`));
+socket.on('parsing_exit', (exit) => console.log(`Exit: ${exit}`));
+socket.on('parsing_insert', (insert) => console.log(`Insert: ${insert}`));
+socket.on('parsing_partner', (partner) => console.log(`Partner: ${partner}`));
+socket.on('parsing_commit', (commit) => console.log(`Commit: ${commit}`));
+socket.on('parsing_fail', (fail) => console.log(`Fail: ${fail}`));
+socket.on('parsing_wake', (wake) => console.log(`Wake: ${wake}`));
+socket.on('parsing_remove', (remove) => console.log(`Remove: ${remove}`));
+socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
+socket.on('parsing_history', (history) => console.log(`History: ${history}`));
+socket.on('parsing_prog', (history) => console.log(`Prog: ${history}`));
+socket.on('parsing_var', (history) => console.log(`Var: ${history}`));
+
+
+
 socket.on('connect', () => {
     socket.emit('pushJob', `
-#include <iostream>
-#include <string>
-#include <chrpp.hh>
 
-/*
-<CHR name="Test">
-    <chr_constraint>    cat(?std::string), person(?std::string),
-                        dog(?std::string), sleepy(?std::string),
-                        lazy(?std::string)
-    cat("bounty")   <=> success();;
-    cat(_)          <=> failure();;
- 
-    person("jack")  <=> success();;
-    person(_)       <=> failure();;
- 
-    dog("ginger")   <=> success();;
-    dog(_)          <=> failure();;
- 
-    sleepy("jack")  <=> success();;
-    sleepy("bounty")<=> success();;
-    sleepy(_)       <=> failure();;
- 
-    lazy(X) <=> cat(X) ; sleepy(X);;
-</CHR>
- */
+		<chr_constraint> acker(?int,?int,?int)
+		
+		acker(X, Y, A1) \\ acker(X, Y, A2) <=> A1 %= A2;;
+		acker(0, Y, A) ==>  A %= Y + 1;;
+		acker(X, 0, A) ==> acker(X - 1, 1, A);;
+		acker(X, Y, A) ==> X > 0 and Y > 0 | 
+							acker(X, Y - 1, A1),
+							acker(X - 1, A1, A);;
 
-int main() {
-    auto space = Test::create();
-    if (space->lazy(std::string("bounty"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
- 
-    if (space->lazy(std::string("jack"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
- 
-    if (space->lazy(std::string("ginger"))) 
-        std::cout << "true" << std::endl;
-    else
-        std::cout << "false" << std::endl;
-    return 0;
-}
-        `, []);
+
+        `, ["acker(2,3, 5)"]);
 });

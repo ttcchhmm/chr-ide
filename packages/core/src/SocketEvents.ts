@@ -34,6 +34,24 @@ export type ServerToClientEvents = {
      * @param message - An optional error message
      */
     error: (step: ErrorStep, message?: string) => void;
+
+    
+    parsing_goal: (message?: string) => void;
+    parsing_exit: (message?: string) => void;
+    parsing_fail: (message?: string) => void;
+    parsing_partner: (message?: string) => void;
+    parsing_wake: (message?: string) => void;
+    parsing_insert: (message?: string) => void;
+    parsing_call: (message?: string) => void;
+    parsing_remove: (message?: string) => void;
+    parsing_try: (message?: string) => void;
+    parsing_commit: (message?: string) => void;
+    parsing_backtrack: (message?: string) => void;
+    parsing_history: (message?: string) => void;
+    parsing_all: (message?: string) => void;
+    parsing_prog: (message?: string) => void;
+    parsing_var: (message?: string) => void;
+
 };
 
 /**

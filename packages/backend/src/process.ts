@@ -1,6 +1,7 @@
 import Config from './config.js';
-import { mkdir, writeFile, readdir } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
+import { CHRVariable } from '@chr-ide/core';
 
 /**
  * Wait for a process to end and return its exit code.
@@ -20,6 +21,44 @@ const verboseProcessOutput = (process: ChildProcess) => {
     }
 };
 
+
+
+export const prepareFile = async (code: string, constraints: string[], watch: CHRVariable[]) => {
+
+    let fileContent = await readFile("./src/skeleton.cpp", 'utf-8');
+    
+    code = code.replace(/\/\*[\s\S]*?\*\//g, '');
+
+    code = code.replace(/\/\/.*$/gm, '');
+
+    constraints = constraints.map(constraint => 
+        constraint.replace(/\/\*[\s\S]*?\*\//g, '')
+    );
+        
+
+    fileContent = fileContent.replace("//Rules", code);
+    fileContent = fileContent.replace(
+        "//Constraints",
+        constraints.map(constraint => "space->" + constraint + ";").join('\n')
+    );
+
+
+    const template = `for (auto& c : space->get_//constraint_store()){
+        std::cout << "TRACE [VAR][//constraint///position][" << *std::get<//position>(c)<<"]"<< std::endl;
+    }
+    `;
+
+    fileContent = fileContent.replace("//Store", watch.map((item: CHRVariable) => 
+        template
+            .replace(/\/\/constraint/g, item.constraint)
+            .replace(/\/\/position/g, item.position.toString())
+    ).join('\n'));
+
+
+    return fileContent;
+};
+
+
 /**
  * Setup the compilation environment.
  * 
@@ -27,6 +66,7 @@ const verboseProcessOutput = (process: ChildProcess) => {
  * @returns A promise that resolves to the path where the code should be compiled.
  */
 export const setupCompilation = async (code: string) => {
+    await writeFile("./main.cpp", code);
     const randomId = Math.floor(Math.random() * 10000);
     const compilePath = `${Config.compileDirectory}/chr-ide-${randomId}`;
 
@@ -68,6 +108,7 @@ export const chrppc = async (directory: string) => {
     return finishedProperly;
 };
 
+
 /**
  * Run the C++ compiler.
  * 
@@ -101,18 +142,16 @@ export const cpp = async (directory: string) => {
  * Run the compiled program.
  * 
  * @param directory - The directory where the program is located.
- * @param onStderr - A callback function to handle the output of the program.
+ * @param onStdout - A callback function to handle the output of the program.
  * @returns A promise that resolves to true if the program ran successfully, false otherwise.
  */
-export const program = async (directory: string, onStderr: (line: string) => void) => {
+export const program = async (directory: string, onStdout: (line: string) => void) => {
     const p = spawn(
         `${directory}/program`,
         [],
         { cwd: directory }
     );
 
-    // TRACE output is on stderr
-    p.stderr.on('data', onStderr);
-
+    p.stdout.on('data', (b: Buffer | string) => onStdout(b.toString()));
     return await waitForProcessEnd(p) === 0;
 };
