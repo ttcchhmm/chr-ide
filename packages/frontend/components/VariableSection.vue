@@ -31,11 +31,11 @@ const erase = (index: number) => {
                             </UButton>
                         </td>
 
-                        <td class="p-1 border border-(--ui-border-accented) font-mono">
+                        <td class="p-1 border border-(--ui-border-accented) font-mono text-sm">
                             {{ watch.constraint }}
                         </td>
 
-                        <td class="p-1 border border-(--ui-border-accented) font-mono">
+                        <td class="p-1 border border-(--ui-border-accented) font-mono text-sm">
                             {{ watch.position }}
                         </td>
 
@@ -47,7 +47,7 @@ const erase = (index: number) => {
                             </p>
                         </td>
 
-                        <td v-else class="p-1 border border-(--ui-border-accented) font-mono">{{ watch.value }}</td>
+                        <td v-else class="p-1 border border-(--ui-border-accented) font-mono text-sm">{{ watch.value }}</td>
                     </tr>
                 </tbody>
             </table>

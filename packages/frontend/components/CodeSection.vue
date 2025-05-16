@@ -12,6 +12,6 @@ const { code } = storeToRefs(useChrStore());
             v-model="code"
             :tab-side="2"
             :intent-with-tab="true"
-            :style="{ 'flex-grow': 1 }"/>
+            :style="{ 'flex-grow': 1, 'font-family': 'JetBrains Mono, monospace' }"/>
     </section>
 </template>

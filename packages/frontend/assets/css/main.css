@@ -3,4 +3,5 @@
 
 @theme static {
     --font-sans: 'Public Sans', 'Gill Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 }
