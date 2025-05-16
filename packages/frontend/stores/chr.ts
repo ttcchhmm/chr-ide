@@ -1,10 +1,5 @@
 import type { CHRVariable } from '@chr-ide/core';
 
-/**
- * File format supported by this version of CHR IDE.
- */
-const WORKSPACE_FILE_FORMAT_VERSION = 0;
-
 export const useChrStore = defineStore('chr', {
     state: () => ({
         /**
@@ -13,7 +8,7 @@ export const useChrStore = defineStore('chr', {
         code: '',
 
         /**
-         * Watched variables.
+         * Variables history.
          */
         variables: [] as CHRVariable[],
 
@@ -47,7 +42,6 @@ export const useChrStore = defineStore('chr', {
                 code: this.code,
                 variables: this.variables,
                 constraints: this.constraints,
-                formatVersion: WORKSPACE_FILE_FORMAT_VERSION,
             };
         },
 
@@ -63,10 +57,40 @@ export const useChrStore = defineStore('chr', {
             socket.on('connect', () => this.disconnected = false);
             socket.on('disconnect', () => this.disconnected = true);
             
-            socket.on('error', () => this.running = false);
+            socket.on('error', (step) => {
+                this.running = false;
+                useToast().add({
+                    title: 'Run failed',
+                    description: `The run failed at the following step: ${step}.`,
+                    color: 'error',
+                });
+            });
+
             socket.on('finished', () => this.running = false);
 
-            // TODO: listen to parser events
+            socket.on('parsing_var', (v) => {
+                const variable = this.variables.find(localVar => localVar.constraint === v.constraint && localVar.position === localVar.position);
+
+                if(!variable) {
+                    this.variables.push(v);
+                }
+            });
+
+            socket.on('parsing_rules', (c) => this.constraints.push(c));
+
+            socket.on('parsing_fail', (msg) => {
+                this.running = false;
+                useToast().add({
+                    title: 'Program failed',
+                    description: `The program failed with the following error: ${msg}.`,
+                    color: 'error',
+                });
+            });
+
+            socket.on('running', () => this.$patch({
+                constraints: [],
+                variables: [],
+            }));
         },
 
         /**
@@ -74,8 +98,10 @@ export const useChrStore = defineStore('chr', {
          */
         reset() {
             const socket = this.socket;
+            const disconnected = this.disconnected;
             this.$reset();
             this.socket = socket;
+            this.disconnected = disconnected;
         },
 
         /**
@@ -83,7 +109,7 @@ export const useChrStore = defineStore('chr', {
          */
         run() {
             this.running = true;
-            this.socket?.emit('pushJob', '', []); // TODO: finish this
+            this.socket?.emit('pushJob', this.code, this.constraints, this.variables);
         }
     }
 });

@@ -11,7 +11,7 @@ const showResetDialog = ref(false);
 const chrStore = useChrStore();
 const exampleStore = useExampleStore();
 
-const run = () => console.log('Run');
+const run = () => chrStore.run();
 
 const invokeIfPossible = (func: (() => void) | null) => {
     if(func) {
