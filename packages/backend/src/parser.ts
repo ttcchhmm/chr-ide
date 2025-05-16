@@ -18,6 +18,7 @@ export default (socket: CHRSocket) => (input: string) => {
             .map(l => l.split(' ')[1]) // Keep only the second part (from 'TRACE [SOMETHING][A][B] explanation' keep only '[SOMETHING][A][B]')
             .map(l => l.substring(1, l.length - 1) // Remove the first and last character, to facilitate splitting the string later
             .split('][')); // Split the tokens
+
         batches.forEach(tokens => {
             verbose(`${socket.handshake.address}: ${tokens.join(' | ')}`);
             const [type, ...rest] = tokens;
@@ -25,42 +26,8 @@ export default (socket: CHRSocket) => (input: string) => {
             console.log(`TRACE PARSER: ${type} ${message}`);
             
             switch (type) {
-
-                case 'GOAL':
-                    
-                    break;
-                case 'CALL':
-                    
-                    break;
-                case 'TRY':
-                    
-                    break;
-                case 'EXIT':
-                    
-                    break;
-                case 'INSERT':
-                    
-                    break;
-                case 'PARTNER':
-                    
-                    break;
-                case 'COMMIT':
-                    
-                    break;
                 case 'FAIL':
                     socket.emit('parsing_fail', message);
-                    break;
-                case 'WAKE':
-                    
-                    break;
-                case 'REMOVE':
-                    
-                    break;
-                case 'BACKTRACK':
-                    
-                    break;
-                case 'HISTORY':
-                    
                     break;
                 case 'RULES': {
                     // format : acker#22(0,7,8)
@@ -79,12 +46,27 @@ export default (socket: CHRSocket) => (input: string) => {
                     socket.emit('parsing_var', chrVariable);
                     break;
                 }
-                default:
+
+                default: {
                     console.error(`TRACE PARSER: Unknown token '${type}', skipping`);
                     socket.emit('error', 'parser', type);
                     break;
-            }
+                }
 
+                case 'GOAL':
+                case 'CALL':
+                case 'TRY':
+                case 'EXIT':
+                case 'INSERT':
+                case 'PARTNER':
+                case 'COMMIT':
+                case 'WAKE':
+                case 'REMOVE':
+                case 'BACKTRACK':
+                case 'HISTORY': {
+                    break;
+                }
+            }
         });
     }
 };

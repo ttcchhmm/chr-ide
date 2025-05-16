@@ -37,21 +37,25 @@ export type ServerToClientEvents = {
      */
     error: (step: ErrorStep, message?: string) => void;
 
-    
-    parsing_goal: (message?: string) => void;
-    parsing_exit: (message?: string) => void;
-    parsing_fail: (message?: string) => void;
-    parsing_partner: (message?: string) => void;
-    parsing_wake: (message?: string) => void;
-    parsing_insert: (message?: string) => void;
-    parsing_call: (message?: string) => void;
-    parsing_remove: (message?: string) => void;
-    parsing_try: (message?: string) => void;
-    parsing_commit: (message?: string) => void;
-    parsing_backtrack: (message?: string) => void;
-    parsing_history: (message?: string) => void;
-    parsing_all: (message?: string) => void;
-    parsing_rules: (message?: string) => void;
+    /**
+     * Emitted when the program fails.
+     * 
+     * @param error_message - The error message.
+     */
+    parsing_fail: (error_message: string) => void;
+
+    /**
+     * Emitted when the program finds a rules.
+     * 
+     * @param constraint - The constraint that was found.
+     */
+    parsing_rules: (constraint: string) => void;
+
+    /**
+     * Emitted when the program finds a watched variable.
+     * 
+     * @param variable - The variable that was found.
+     */
     parsing_var: (variable: CHRVariable) => void;
 
 };
