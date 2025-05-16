@@ -9,6 +9,11 @@ const props = defineProps<{
      * Whether the "save as" operation is supported.
      */
     saveAsSupported: boolean,
+
+    /**
+     * Examples to show in the "Load example" dropdown.
+     */
+    examples: Example[],
 }>();
 
 const emit = defineEmits<{
@@ -36,7 +41,19 @@ const emit = defineEmits<{
      * Emitted when the "Run" button is pressed.
      */
     (e: 'run'): void;
+
+    /**
+     * Emitted when an example is to be loaded.
+     */
+    (e: 'loadExample', example: Example): void;
 }>();
+
+const exampleItems = computed(() => props.examples.map(e => ({
+    label: e.name,
+    onSelect: () => {
+        emit('loadExample', e);
+    },
+})));
 
 const { running } = storeToRefs(useChrStore());
 </script>
@@ -121,6 +138,10 @@ const { running } = storeToRefs(useChrStore());
                         </template>
                     </UPopover>
                 </UButtonGroup>
+
+                <UDropdownMenu :items="exampleItems" class="ml-4">
+                    <UButton icon="i-lucide-chevron-down">Load example</UButton>
+                </UDropdownMenu>
             </section>
 
             <AboutDialog/>
