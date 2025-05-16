@@ -104,7 +104,7 @@ watch(disconnected, () => {
     <div class="flex flex-col h-screen">
         <AppHeader :examples="examples" :file-name="fileName" :save-as-supported="saveAs !== null" @open="() => invokeIfPossible(open)" @save="invokeIfPossible(save)" @save-as="invokeIfPossible(saveAs)" @new-project="() => showResetDialog = true" @run="run" @load-example="loadExample"/>
 
-        <main class="grid grid-cols-3 grow h-full">
+        <main class="grid grid-cols-3 grow h-0 shrink-0 basis-auto">
             <CodeSection/>
             <ConstraintStoreSection/>
             <VariableSection/>
