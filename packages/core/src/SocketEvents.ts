@@ -52,7 +52,7 @@ export type ServerToClientEvents = {
     parsing_history: (message?: string) => void;
     parsing_all: (message?: string) => void;
     parsing_rules: (message?: string) => void;
-    parsing_var: (message?: string) => void;
+    parsing_var: (variable: CHRVariable) => void;
 
 };
 

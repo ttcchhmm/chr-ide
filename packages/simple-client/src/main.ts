@@ -33,7 +33,9 @@ socket.on('parsing_remove', (remove) => console.log(`Remove: ${remove}`));
 socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
 socket.on('parsing_history', (history) => console.log(`History: ${history}`));
 socket.on('parsing_rules', (history) => console.log(`Prog: ${history}`));
-socket.on('parsing_var', (history) => console.log(`Var: ${history}`));
+socket.on('parsing_var', (variable: CHRVariable) => {
+	console.log(`Var: ${JSON.stringify(variable)}`);
+});
 
 
 socket.on('connect', () => {

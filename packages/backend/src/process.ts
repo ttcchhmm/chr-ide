@@ -66,7 +66,6 @@ export const prepareFile = async (code: string, constraints: string[], watch: CH
  * @returns A promise that resolves to the path where the code should be compiled.
  */
 export const setupCompilation = async (code: string) => {
-    await writeFile("./main.cpp", code);
     const randomId = Math.floor(Math.random() * 10000);
     const compilePath = `${Config.compileDirectory}/chr-ide-${randomId}`;
 
