@@ -24,7 +24,7 @@
     "husky": "^9.1.7",
     "rimraf": "^6.0.1",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.32.0"
+    "typescript-eslint": "^8.32.1"
   },
   "scripts": {
     "build": "npm run build -w @chr-ide/core && npm run build -w @chr-ide/simple-client && npm run build:prod -w @chr-ide/backend && npm run build -w @chr-ide/frontend",
@@ -34,8 +34,5 @@
     "dev:frontend": "npm run dev -w @chr-ide/frontend",
     "dev:simple-client": "npm run dev -w @chr-ide/simple-client",
     "prepare": "husky || true"
-  },
-  "dependencies": {
-    "vue-codemirror": "^6.1.1"
   }
 }
