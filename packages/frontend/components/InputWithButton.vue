@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const inputWithButtonStore = useInputWithButtonStore();
+
 const props = defineProps<{
     /**
      * Label used for the section
@@ -17,7 +19,7 @@ const emits = defineEmits<{
     (e: 'submit', value: string): void,
 }>();
 
-const id = ref(`input-with-button-${Math.random() * 10000}`);
+const id = ref('0');
 
 const input = ref('');
 
@@ -26,6 +28,10 @@ const submit = () => {
     emits("submit", input.value);
     input.value = "";
 }
+
+onMounted(() => {
+    id.value = inputWithButtonStore.increment().toString();
+});
 
 </script>
 
