@@ -10,7 +10,7 @@ This workspace contains the backend source. The source code is stored in the [`s
 > The only configuration variable that you can change is `CHR_IDE_ALLOWED_ORIGINS`, if you're hosting CHR IDE over a network.
 
 The following environment variables can be used to configure the behavior of CHR IDE:
-- `CHR_IDE_WS_PORT`: Set the port used by the server.
+- `CHR_IDE_PORT`: Set the port used by the server.
   - Defaults to `3000`.
 - `CHR_IDE_CHRPPC_ROOT`: Directory where `chrppc` is installed, should be the same value that the one used for `DESTDIR` when running `make install` inside the CHR++ repository.
   - Defaults to the system root.
