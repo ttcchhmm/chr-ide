@@ -13,7 +13,7 @@ const props = defineProps<{
     /**
      * Examples to show in the "Load example" dropdown.
      */
-    examples: Example[],
+    examples: readonly Example[],
 }>();
 
 const emit = defineEmits<{

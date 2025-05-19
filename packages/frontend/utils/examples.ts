@@ -1,7 +1,7 @@
 /**
  * Array containing examples to show in the dropdown.
  */
-export default [
+export default Object.freeze([
     {
         name: 'Towers of Hanoi',
         constraints: ["hanoi(3,'A','C','B')"],
@@ -39,4 +39,4 @@ acker(X, Y, A) ==> X > 0 and Y > 0 |
 	acker(X, Y - 1, A1),
 	acker(X - 1, A1, A);;`        
     },
-] as Example[]; 
+]) as readonly Example[]; 

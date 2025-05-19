@@ -29,8 +29,8 @@ const newProject = () => {
     if(exampleStore.example) {
         chrStore.$patch({
             code: exampleStore.example.code,
-            constraints: exampleStore.example.constraints,
-            variables: exampleStore.example.variables,
+            constraints: exampleStore.example.constraints.slice(), // Clone the array
+            variables: exampleStore.example.variables.slice(), // Clone the array
         });
 
         exampleStore.example = null;
