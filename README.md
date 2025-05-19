@@ -9,7 +9,7 @@
 # How to run
 [A Docker image](https://github.com/users/ttcchhmm/packages/container/package/chr-ide) is provided with this project:
 ```bash
-docker run --rm -p 3000:3000 ghcr.io/ttcchhmm/chr-ide:latest
+docker run --rm -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/ttcchhmm/chr-ide:latest
 ```
 
 Then open `http://localhost:3000` in your web browser.

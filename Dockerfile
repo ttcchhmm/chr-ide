@@ -35,6 +35,7 @@ WORKDIR /app
 COPY --from=chr-ide-builder /app/node_modules ./node_modules
 COPY --from=chr-ide-builder /app/packages/backend/dist ./dist
 COPY --from=chr-ide-builder /app/packages/backend/skeleton.cpp ./skeleton.cpp
+COPY --from=chr-ide-builder /app/packages/backend/Dockerfile ./Dockerfile
 COPY --from=chr-ide-builder /app/packages/frontend/.output/public ./web
 
 ENV NODE_ENV='production'
