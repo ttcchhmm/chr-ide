@@ -1,5 +1,5 @@
 import Config from './config.js';
-import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, readFile, access, constants } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { CHRVariable } from '@chr-ide/core';
 
@@ -21,10 +21,37 @@ const verboseProcessOutput = (process: ChildProcess) => {
     }
 };
 
+/**
+ * Check that `chrppc` is available.
+ * @returns A promise that resolve to true if `chrppc` is available, false otherwise.
+ */
+export const checkForChrppc = async () => {
+    try {
+        await access(`${Config.chrppcInstallRoot}/usr/local/bin/chrppc`, constants.X_OK);
+        return true;
+    } catch(_e) {
+        return false;
+    }
+};
 
+/**
+ * Check that a C++ compiler is available.
+ * @returns A promise that resolves to true if a C++ compiler is available, false otherwise.
+ */
+export const checkForCompiler = async () => {
+    const compiler = spawn(
+        Config.cppCompiler,
+        [
+            '--version',
+        ],
+    );
+
+    compiler.stdout.on('data', (input: Buffer) => console.log(`[c++]: ${input.toString().split('\n')[0]}`));
+
+    return await waitForProcessEnd(compiler) === 0;
+};
 
 export const prepareFile = async (code: string, constraints: string[], watch: CHRVariable[]) => {
-
     let fileContent = await readFile("./skeleton.cpp", 'utf-8');
     
     code = code.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -57,7 +84,6 @@ export const prepareFile = async (code: string, constraints: string[], watch: CH
 
     return fileContent;
 };
-
 
 /**
  * Setup the compilation environment.
@@ -106,7 +132,6 @@ export const chrppc = async (directory: string) => {
 
     return finishedProperly;
 };
-
 
 /**
  * Run the C++ compiler.
