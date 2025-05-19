@@ -24,6 +24,8 @@ The following environment variables can be used to configure the behavior of CHR
   - Defaults to `false` in production, `true` in development.
 - `CHR_IDE_ALLOWED_ORIGINS`: Origins allowed to contact this server, used for the `Access-Control-Allow-Origin` CORS header. Should be a list of allowed origins, separated by commas.
   - Default to `http://localhost:3000,http://localhost:4000`.
+- `CHR_IDE_KEEP_DATA`: Whether to keep code and programs after execution. Should be set to `true` to enable it.
+  - Defaults to false in production, true in development.
 
 # Major dependencies
 - [**Node.js**](https://nodejs.org): JavaScript runtime

@@ -3,6 +3,10 @@ import { DisconnectReason, type Server, type Socket } from "socket.io";
 import { chrppc, cpp, prepareFile , program, setupCompilation } from "./process.js";
 import parser from "./parser.js";
 import { CHRVariable } from "@chr-ide/core";
+import Config from "./config.js";
+import { rm } from 'node:fs/promises';
+import verbose from "./utils/verbose.js";
+
 /**
  * Socket type for the CHR IDE server.
 */
@@ -17,8 +21,8 @@ export type CHRSocket = Socket<ClientToServerEvents, ServerToClientEvents, Inter
 const onPushJob = (socket: CHRSocket) =>
     async (code: string, constraints: string[], watch: CHRVariable[]) => {
         console.log(`Received code from ${socket.handshake.address}`);
-        const CHRPPCode = await prepareFile(code, constraints, watch);
-        const directory = await setupCompilation(CHRPPCode);
+        const chrppCode = await prepareFile(code, constraints, watch);
+        const directory = await setupCompilation(chrppCode);
 
         socket.emit('transpiling');
         if (await chrppc(directory)) {
@@ -37,6 +41,12 @@ const onPushJob = (socket: CHRSocket) =>
             }
         } else {
             socket.emit('error', 'chrpp');
+        }
+
+        if(!Config.keepData) {
+            await rm(directory, { recursive: true, force: true });
+        } else {
+            verbose(`Keeping ${directory}`);
         }
     };
 

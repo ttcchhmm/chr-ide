@@ -54,6 +54,13 @@ const config = Object.freeze({
      * Set by the `CHR_IDE_ALLOWED_ORIGINS` environment variable. Should be set to a list of allowed origins, separated by commas. Defaults to `http://localhost:3000,http://localhost:4000`.
      */
     allowedOrigins: process.env.CHR_IDE_ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:4000',
+
+    /**
+     * Whether to keep code and programs after execution.
+     * 
+     * Set by the `CHR_IDE_KEEP_DATA` environment variable. Should be set to `true` to enable it. Defaults to false in production, true in development.
+     */
+    keepData: process.env.CHR_IDE_KEEP_DATA === undefined ? process.env.NODE_ENV !== 'production' : process.env.CHR_IDE_KEEP_DATA === 'true',
 });
 
 export default config;
