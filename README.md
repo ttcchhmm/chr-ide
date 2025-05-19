@@ -15,9 +15,7 @@ docker run --rm -p 3000:3000 ghcr.io/ttcchhmm/chr-ide:latest
 Then open `http://localhost:3000` in your web browser.
 
 > [!NOTE]
-> The image hosted on GitHub is only built for `x86_64`.
->
-> If you're using an ARM-based system (such as an Apple Silicon Mac or a Raspberry Pi) and you want to avoid relying on a software-based emulator, please [build your own image](#build-the-docker-image).
+> The image hosted on GitHub is built for `x86_64` and `arm64`.
 
 ## Configuration
 If you're only using it on your local machine, the Docker image is plug-and-play, no additional configuration is required.
