@@ -69,7 +69,8 @@ export const useChrStore = defineStore('chr', {
             socket.on('finished', () => this.running = false);
 
             socket.on('parsing_var', (v) => {
-                const variable = this.variables.find(localVar => localVar.constraint === v.constraint && localVar.position === localVar.position);
+
+                const variable = this.variables.find(localVar => localVar.constraint === v.constraint && localVar.position === v.position);
 
                 if(!variable) {
                     this.variables.push(v);
