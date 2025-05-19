@@ -3,7 +3,7 @@
  */
 export default [
     {
-        name: 'Towers of Hanoï',
+        name: 'Towers of Hanoi',
         constraints: ["hanoi(3,'A','C','B')"],
         variables: [],
         code:
