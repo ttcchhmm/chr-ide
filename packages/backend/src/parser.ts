@@ -15,24 +15,26 @@ export default (socket: CHRSocket) => (input: string) => {
             .replace(/ +/g, ' ') // Fuse multiple spaces into one
             .split('\n') // Split the output line by line
             .filter(l => l.trim() !== '') // Remove empty lines
-            .map(l => l.split(' ')[1]) // Keep only the second part (from 'TRACE [SOMETHING][A][B] explanation' keep only '[SOMETHING][A][B]')
-            .filter(l => l !== undefined)
-            .map(l => l.substring(1, l.length - 1) // Remove the first and last character, to facilitate splitting the string later
-            .split('][')); // Split the tokens
+            .map(l => {
+                const parts = l.split(' ');
+                const explanation = parts.slice(2).join(' '); // Extract the explanation
+                return { tokens: parts[1].substring(1, parts[1].length - 1).split(']['), explanation };
+            });
 
-        batches.forEach(tokens => {
-            verbose(`${socket.handshake.address}: ${tokens.join(' | ')}`);
+        batches.forEach(({ tokens, explanation }) => {
+            verbose(`${socket.handshake.address}: ${tokens.join(' | ')} | ${explanation}`);
             const [type, ...rest] = tokens;
             const message = rest.join(' ');
+            console.log(`TRACE PARSER: ${type} ${message} | Explanation: ${explanation}`);
             
             switch (type) {
                 case 'FAIL':
-                    socket.emit('parsing_fail', message);
+                    socket.emit('parsing_fail', message + " : " +  explanation);
                     break;
                 case 'RULES': {
                     // format : acker#22(0,7,8)
                     const cleaned = message.replace(/#.*?\(/, '(');
-                    socket.emit('parsing_rules', cleaned);
+                    socket.emit('parsing_rules', cleaned );
                     break;
                 }
                 case 'VAR': {
@@ -47,9 +49,14 @@ export default (socket: CHRSocket) => (input: string) => {
                     break;
                 }
 
+                case 'BACKTRACK':
+                    socket.emit('parsing_backtrack', explanation);
+                    break;
+
+
                 default: {
                     console.error(`TRACE PARSER: Unknown token '${type}', skipping`);
-                    socket.emit('error', 'parser', type);
+                    socket.emit('error', 'parser', type);                    
                     break;
                 }
 
@@ -62,7 +69,6 @@ export default (socket: CHRSocket) => (input: string) => {
                 case 'COMMIT':
                 case 'WAKE':
                 case 'REMOVE':
-                case 'BACKTRACK':
                 case 'HISTORY': {
                     break;
                 }

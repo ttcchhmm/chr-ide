@@ -79,6 +79,10 @@ export const useChrStore = defineStore('chr', {
 
             socket.on('parsing_rules', (c) => this.constraints.push(c));
 
+            socket.on('parsing_backtrack', (msg) => {
+                console.log(msg);
+            });
+
             socket.on('parsing_fail', (msg) => {
                 this.running = false;
                 console.error(msg);

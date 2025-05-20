@@ -25,6 +25,7 @@ socket.on('parsing_rules', (history) => console.log(`Prog: ${history}`));
 socket.on('parsing_var', (variable: CHRVariable) => {
 	console.log(`Var: ${JSON.stringify(variable)}`);
 });
+socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
 
 
 socket.on('connect', () => {
