@@ -31,6 +31,8 @@ The following environment variables can be used to configure the behavior of CHR
   - `yes`: Always run programs in Docker. Fails to start if Docker isn't reachable.
   - `auto`: Try running programs in Docker, but fallback to running locally if Docker isn't reachable.
     - This is the default.
+- `CHR_IDE_BUILD_VOLUME_NAME`: Name of the Docker volume where build artifacts are written to. Used when running programs in Docker, to properly mount their executable in the newly created empty container.
+  - Defaults to nothing.
 
 # Major dependencies
 - [**Node.js**](https://nodejs.org): JavaScript runtime

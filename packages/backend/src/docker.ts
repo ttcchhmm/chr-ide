@@ -1,6 +1,7 @@
 import Docker from 'dockerode';
 import Config from './config.js';
 import { exit } from 'node:process';
+import verbose from './utils/verbose.js';
 
 let daemon: Docker | null = null;
 
@@ -36,6 +37,21 @@ export const setupDocker = async () => {
     }
     
     if(Config.executeInDocker !== 'no') {
+        // Check if the name of the build volume is provided.
+        if(Config.dockerBuildVolume === null && Config.dockerBuildVolume === '') {
+            console.error('Trying to enable Docker support, but no name for the build volume was provided!');
+            console.error('See https://github.com/ttcchhmm/chr-ide/blob/main/packages/backend/README.md#configuration to learn more.');
+
+            if(Config.executeInDocker === 'auto') {
+                console.warn('Falling back to running programs in the same context as this process.');
+                console.warn("THIS CAN BE INSECURE, PROCEED WITH CAUTION!");
+    
+                return;
+            } else {
+                exit(1);
+            }
+        }
+
         daemon = new Docker();
 
         try {
@@ -63,7 +79,49 @@ export const setupDocker = async () => {
     } else {
         console.warn("PROGRAMS WON'T BE RUN IN DEDICATED CONTAINERS. THIS CAN BE INSECURE, PROCEED WITH CAUTION!");
     }
-}
+};
+
+/**
+ * Run a program in a scratch container.
+ * @param programPath The path of the program on the host to run.
+ * @param onOutput Callback called when the program output something to stdout.
+ */
+export const runInContainer = async (programPath: string, onOutput: (output: string) => void) => {
+    if(daemon) {
+        // Create the container
+        const container = await daemon.createContainer({
+            Image: 'chr-ide-empty',
+            Cmd: [programPath],
+            Tty: true,
+            HostConfig: {
+                Binds: [
+                    `${Config.dockerBuildVolume}:${Config.compileDirectory}:ro`,
+                ],
+                AutoRemove: true,
+                CapDrop: ['ALL'], // https://docs.docker.com/engine/security/#linux-kernel-capabilities
+            },
+        });
+
+        // Attach to the container's output stream
+        const stream = await container.attach({ stream: true, stdout: true, stderr: true });
+
+        // Process the stream and invoke the onOutput callback
+        stream.on('data', (chunk: string | Buffer) => {
+            onOutput(chunk.toString());
+        });
+
+        // Start the container
+        verbose(`Starting container ${container.id}.`);
+        await container.start();
+
+        // Wait for the container to finish
+        await container.wait();
+
+        verbose(`Container ${container.id} has finished execution.`);
+    } else {
+        throw new Error('Docker support is not enabled.');
+    }
+};
 
 /**
  * Check if Docker support is available.

@@ -73,6 +73,15 @@ const config = Object.freeze({
      * Set by the `CHR_IDE_PROGRAMS_RUN_IN_DOCKER` environment variable. Defaults to `auto`.
      */
     executeInDocker: process.env.CHR_IDE_PROGRAMS_RUN_IN_DOCKER ?? 'auto',
+
+    /**
+     * Name of the Docker volume where build artifacts are written to.
+     * 
+     * Used when running programs in Docker, to properly mount their executable in the newly created empty container.
+     * 
+     * Set by the `CHR_IDE_BUILD_VOLUME_NAME` environment variable. Defaults to nothing.
+     */
+    dockerBuildVolume: process.env.CHR_IDE_BUILD_VOLUME_NAME ?? null,
 });
 
 export default config;
