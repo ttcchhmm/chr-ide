@@ -12,9 +12,9 @@ const buildScratchImage = async () => {
         const stream = await daemon.buildImage(
             {
                 context: '.',
-                src: ['Dockerfile'],
+                src: ['Dockerfile', '.empty'],
             },
-            {t: 'chr-ide-empty'}
+            {t: 'chr-ide-empty:latest'}
         );
 
         // https://github.com/apocas/dockerode#building-an-image
