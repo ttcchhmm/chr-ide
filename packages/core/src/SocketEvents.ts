@@ -58,6 +58,14 @@ export type ServerToClientEvents = {
      */
     parsing_var: (variable: CHRVariable) => void;
 
+
+    /**
+     * Emitted when the program backtracks.
+     * 
+     * @param explanation - The explanation of the backtrack.
+     */
+    parsing_backtrack: (explanation: string) => void;
+
 };
 
 /**

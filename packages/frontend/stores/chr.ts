@@ -79,13 +79,13 @@ export const useChrStore = defineStore('chr', {
 
             socket.on('parsing_rules', (c) => this.constraints.push(c));
 
+            socket.on('parsing_backtrack', (msg) => {
+                console.log(msg);
+            });
+
             socket.on('parsing_fail', (msg) => {
                 this.running = false;
-                useToast().add({
-                    title: 'Program failed',
-                    description: `The program failed with the following error: ${msg}.`,
-                    color: 'error',
-                });
+                console.error(msg);
             });
 
             socket.on('running', () => this.$patch({
