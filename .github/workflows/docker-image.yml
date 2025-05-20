@@ -74,8 +74,8 @@ jobs:
 
       - name: Inspect and Fetch Image Digests
         run: |
-          AMD64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 --format '{{print .Manifest.Digest}}')
-          ARM64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64 --format '{{print .Manifest.Digest}}')
+          AMD64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
+          ARM64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64 --format '{{json .}}' | jq -r '.manifest.manifests[0].digest')
           echo "AMD64_DIGEST=${AMD64_DIGEST}" >> $GITHUB_ENV
           echo "ARM64_DIGEST=${ARM64_DIGEST}" >> $GITHUB_ENV
 
