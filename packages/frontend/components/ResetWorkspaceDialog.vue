@@ -19,10 +19,6 @@ const cancel = () => {
     exampleStore.example = null;
     emit('update:open', false);
 }
-
-defineShortcuts({
-    'escape': () => cancel(),
-});
 </script>
 
 <template>

@@ -144,7 +144,10 @@ const { running } = storeToRefs(useChrStore());
                 </UDropdownMenu>
             </section>
 
-            <AboutDialog/>
+            <div>
+                <LogsSlideover/>
+                <AboutDialog/>
+            </div>
         </div>
         
         <UProgress v-if="running" size="sm" />

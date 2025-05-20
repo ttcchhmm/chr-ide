@@ -1,6 +1,6 @@
 <template>
     <UModal title="About CHR IDE">
-        <UButton icon="i-lucide-info">About</UButton>
+        <UButton icon="i-lucide-info" class="ml-4">About</UButton>
 
         <template #body>
             <p class="pb-4">CHR IDE is a web-based playground built around <ULink to="https://gitlab.com/vynce/chrpp" inactive-class="text-primary">CHR++</ULink>, a CHR-to-C++ compiler.</p>
