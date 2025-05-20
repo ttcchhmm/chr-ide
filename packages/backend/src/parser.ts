@@ -25,7 +25,6 @@ export default (socket: CHRSocket) => (input: string) => {
             verbose(`${socket.handshake.address}: ${tokens.join(' | ')} | ${explanation}`);
             const [type, ...rest] = tokens;
             const message = rest.join(' ');
-            console.log(`TRACE PARSER: ${type} ${message} | Explanation: ${explanation}`);
             
             switch (type) {
                 case 'FAIL':
