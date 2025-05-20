@@ -29,8 +29,8 @@ const newProject = () => {
     if(exampleStore.example) {
         chrStore.$patch({
             code: exampleStore.example.code,
-            constraints: exampleStore.example.constraints.slice(), // Clone the array
-            variables: exampleStore.example.variables.slice(), // Clone the array
+            constraints: exampleStore.example.constraints,
+            variables: exampleStore.example.variables,
         });
 
         exampleStore.example = null;
@@ -47,27 +47,42 @@ useHead({
 });
 
 defineShortcuts({
-    'meta_shift_r': run,
+  'meta_shift_r': { 
+    handler: run, 
+    usingInput: true 
+  },
 
-    'meta_s': () => {
-        if(save.value) {
-            save.value();
-        }
+  'meta_s': { 
+    handler: () => {
+      if (save.value) {
+        save.value();
+      }
     },
+    usingInput: true 
+  },
 
-    'meta_o': () => {
-        if(open.value) {
-            open.value();
-        }
+  'meta_o': { 
+    handler: () => {
+      if (open.value) {
+        open.value();
+      }
     },
+    usingInput: true 
+  },
 
-    'meta_shift_s': () => {
-        if(saveAs.value) {
-            saveAs.value();
-        }
+  'meta_shift_s': { 
+    handler: () => {
+      if (saveAs.value) {
+        saveAs.value();
+      }
     },
+    usingInput: true 
+  },
 
-    'meta_shift_n': () => showResetDialog.value = true,
+  'meta_shift_n': { 
+    handler: () => showResetDialog.value = true, 
+    usingInput: true 
+  },
 });
 
 onMounted(() => {
