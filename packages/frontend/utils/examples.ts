@@ -39,4 +39,21 @@ acker(X, Y, A) ==> X > 0 and Y > 0 |
 	acker(X, Y - 1, A1),
 	acker(X - 1, A1, A);;`        
     },
+    {
+        name: 'N-queens',
+        constraints: ['nqueens(8)'],
+        variables: [],
+        code:
+`<chr_constraint> queen(+int,+int), next_queen(+int), nqueens(?int), solve()
+
+nqueens(N) ==> solve();;
+
+solve() <=> next_queen(0);;
+
+row  @ queen(_,R), queen(_,R)     <=> failure();;
+diag @ queen(C1,R1), queen(C2,R2) <=> abs(C1-C2) == abs(R1-R2) | failure();;
+
+label_queen1 @ nqueens(N), next_queen(C) <=> *C == N | print(*this), success();;
+label_queen2 @ nqueens(N) \\ next_queen(C) <=> exists(r, 0, N-1, (queen(C,r), next_queen(C+1)) ) ;;`
+    },
 ]) as readonly Example[]; 
