@@ -54,9 +54,8 @@ export const checkForCompiler = async () => {
 export const prepareFile = async (code: string, constraints: string[], watch: CHRVariable[]) => {
     let fileContent = await readFile("./skeleton.cpp", 'utf-8');
     
-    code = code.replace(/\/\*[\s\S]*?\*\//g, '');
-
-    code = code.replace(/\/\/.*$/gm, '');
+    // Protect against code injection
+    code = code.replaceAll(/(\/\*)|(\*\/)|(<\/CHR>)/gi, '');
 
     constraints = constraints.map(constraint => 
         constraint.replace(/\/\*[\s\S]*?\*\//g, '')
