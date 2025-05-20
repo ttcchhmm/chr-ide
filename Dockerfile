@@ -44,5 +44,6 @@ RUN mkdir /build
 ENV NODE_ENV='production'
 ENV CHR_IDE_COMPILE_DIRECTORY='/build'
 ENV CHR_IDE_BUILD_VOLUME_NAME='chr-ide-build'
+ENV CHR_IDE_PROGRAMS_RUN_IN_DOCKER='auto'
 
 CMD [ "node", "dist/main.js" ]

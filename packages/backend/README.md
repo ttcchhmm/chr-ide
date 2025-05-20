@@ -28,9 +28,10 @@ The following environment variables can be used to configure the behavior of CHR
   - Defaults to false in production, true in development.
 - `CHR_IDE_EXECUTE_IN_DOCKER`: Whether or not to run compiled programs in a dedicated Docker container. Possible values:
   - `no`: Always run programs locally. Only option available on non-Linux systems.
+    - This is the default.
   - `yes`: Always run programs in Docker. Fails to start if Docker isn't reachable.
   - `auto`: Try running programs in Docker, but fallback to running locally if Docker isn't reachable.
-    - This is the default.
+    - This is the value used by the [Docker image](../../Dockerfile).
 - `CHR_IDE_BUILD_VOLUME_NAME`: Name of the Docker volume where build artifacts are written to. Used when running programs in Docker, to properly mount their executable in the newly created empty container.
   - Defaults to nothing.
 

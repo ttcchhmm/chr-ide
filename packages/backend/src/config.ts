@@ -70,9 +70,9 @@ const config = Object.freeze({
      * - `yes`: Always run programs in Docker. Fails to start if Docker isn't reachable.
      * - `auto`: Try running programs in Docker, but fallback to running locally if Docker isn't reachable.
      * 
-     * Set by the `CHR_IDE_PROGRAMS_RUN_IN_DOCKER` environment variable. Defaults to `auto`.
+     * Set by the `CHR_IDE_PROGRAMS_RUN_IN_DOCKER` environment variable. Defaults to `no`.
      */
-    executeInDocker: process.env.CHR_IDE_PROGRAMS_RUN_IN_DOCKER ?? 'auto',
+    executeInDocker: process.env.CHR_IDE_PROGRAMS_RUN_IN_DOCKER ?? 'no',
 
     /**
      * Name of the Docker volume where build artifacts are written to.
