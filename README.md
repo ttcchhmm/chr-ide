@@ -9,15 +9,13 @@
 # How to run
 [A Docker image](https://github.com/users/ttcchhmm/packages/container/package/chr-ide) is provided with this project:
 ```bash
-docker run --rm -p 3000:3000 ghcr.io/ttcchhmm/chr-ide:latest
+docker run --rm -p 3000:3000 -v chr-ide-build:/build -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/ttcchhmm/chr-ide:latest
 ```
 
 Then open `http://localhost:3000` in your web browser.
 
 > [!NOTE]
-> The image hosted on GitHub is only built for `x86_64`.
->
-> If you're using an ARM-based system (such as an Apple Silicon Mac or a Raspberry Pi) and you want to avoid relying on a software-based emulator, please [build your own image](#build-the-docker-image).
+> The image hosted on GitHub is built for `x86_64` and `arm64`.
 
 ## Configuration
 If you're only using it on your local machine, the Docker image is plug-and-play, no additional configuration is required.

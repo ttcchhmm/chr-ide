@@ -13,10 +13,12 @@
   "description": "",
   "dependencies": {
     "@chr-ide/core": "0.0.0",
+    "dockerode": "^4.0.6",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/dockerode": "^3.3.38",
     "@types/express": "^5.0.1"
   }
 }

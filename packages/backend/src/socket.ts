@@ -6,6 +6,7 @@ import { CHRVariable } from "@chr-ide/core";
 import Config from "./config.js";
 import { rm } from 'node:fs/promises';
 import verbose from "./utils/verbose.js";
+import { isDockerAvailable, runInContainer } from "./docker.js";
 
 /**
  * Socket type for the CHR IDE server.
@@ -28,13 +29,18 @@ const onPushJob = (socket: CHRSocket) =>
         if (await chrppc(directory)) {
             socket.emit('compiling');
 
-            if (await cpp(directory)) {
+            if (await cpp(directory, isDockerAvailable())) {
                 socket.emit('running');
 
-                if (await program(directory, parser(socket))) {
-                    socket.emit('finished');
+                if(!isDockerAvailable()) {
+                    if (await program(directory, parser(socket))) {
+                        socket.emit('finished');
+                    } else {
+                        socket.emit('error', 'program');
+                    }
                 } else {
-                    socket.emit('error', 'program');
+                    await runInContainer(`${directory}/program`, parser(socket));
+                    socket.emit('finished');
                 }
             } else {
                 socket.emit('error', 'cpp');

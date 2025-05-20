@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import Config from './config.js';
 import { setup } from './socket.js';
 import { checkForChrppc, checkForCompiler } from './process.js';
+import { setupDocker } from './docker.js';
 
 console.log('Starting chr-ide');
 
@@ -30,6 +31,9 @@ if(!chrppc || !cpp) {
 
     exit(1);
 }
+
+// Setup Docker support
+await setupDocker();
 
 // Setup the Socket.io server
 const app = express();

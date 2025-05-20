@@ -16,6 +16,7 @@ export default (socket: CHRSocket) => (input: string) => {
             .split('\n') // Split the output line by line
             .filter(l => l.trim() !== '') // Remove empty lines
             .map(l => l.split(' ')[1]) // Keep only the second part (from 'TRACE [SOMETHING][A][B] explanation' keep only '[SOMETHING][A][B]')
+            .filter(l => l !== undefined)
             .map(l => l.substring(1, l.length - 1) // Remove the first and last character, to facilitate splitting the string later
             .split('][')); // Split the tokens
 
@@ -23,7 +24,6 @@ export default (socket: CHRSocket) => (input: string) => {
             verbose(`${socket.handshake.address}: ${tokens.join(' | ')}`);
             const [type, ...rest] = tokens;
             const message = rest.join(' ');
-            console.log(`TRACE PARSER: ${type} ${message}`);
             
             switch (type) {
                 case 'FAIL':

@@ -137,23 +137,31 @@ export const chrppc = async (directory: string) => {
  * Run the C++ compiler.
  * 
  * @param directory - The directory where the compilation should happen.
+ * @param compileStatic - Whether or not to compile the program statically.
  * @returns A promise that resolves to true if the compilation was successful, false otherwise.
  */
-export const cpp = async (directory: string) => {
+export const cpp = async (directory: string, compileStatic: boolean) => {
+    const flags = [
+        '--std=c++17', // TODO: issues with gcc?
+        '-O0',
+        '-o',
+        'program',
+        `-I${Config.chrppcInstallRoot}/usr/local/include/chrpp/`,
+        '-I.',
+        '-DENABLE_TRACE',
+
+        ...Config.extraCompilerFlags.split(' ').filter(flag => flag.length > 0),
+        ...(await readdir(directory)).filter(f => f.endsWith('.cpp'))
+    ];
+
+    if(compileStatic) {
+        flags.push('-static');
+        flags.push('-DEND_SLEEP');
+    }
+
     const compiler = spawn(
         Config.cppCompiler,
-        [
-            '--std=c++17', // TODO: issues with gcc?
-            '-O0',
-            '-o',
-            'program',
-            `-I${Config.chrppcInstallRoot}/usr/local/include/chrpp/`,
-            '-I.',
-            '-DENABLE_TRACE',
-
-            ...Config.extraCompilerFlags.split(' ').filter(flag => flag.length > 0),
-            ...(await readdir(directory)).filter(f => f.endsWith('.cpp'))
-        ],
+        flags,
         { cwd: directory }
     );
 

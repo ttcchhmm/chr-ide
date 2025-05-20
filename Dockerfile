@@ -35,8 +35,14 @@ WORKDIR /app
 COPY --from=chr-ide-builder /app/node_modules ./node_modules
 COPY --from=chr-ide-builder /app/packages/backend/dist ./dist
 COPY --from=chr-ide-builder /app/packages/backend/skeleton.cpp ./skeleton.cpp
+COPY --from=chr-ide-builder /app/packages/backend/Dockerfile ./Dockerfile
 COPY --from=chr-ide-builder /app/packages/frontend/.output/public ./web
 
+RUN touch /app/.empty
+RUN mkdir /build
+
 ENV NODE_ENV='production'
+ENV CHR_IDE_COMPILE_DIRECTORY='/build'
+ENV CHR_IDE_BUILD_VOLUME_NAME='chr-ide-build'
 
 CMD [ "node", "dist/main.js" ]

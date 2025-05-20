@@ -26,8 +26,16 @@ The following environment variables can be used to configure the behavior of CHR
   - Default to `http://localhost:3000,http://localhost:4000`.
 - `CHR_IDE_KEEP_DATA`: Whether to keep code and programs after execution. Should be set to `true` to enable it.
   - Defaults to false in production, true in development.
+- `CHR_IDE_EXECUTE_IN_DOCKER`: Whether or not to run compiled programs in a dedicated Docker container. Possible values:
+  - `no`: Always run programs locally. Only option available on non-Linux systems.
+  - `yes`: Always run programs in Docker. Fails to start if Docker isn't reachable.
+  - `auto`: Try running programs in Docker, but fallback to running locally if Docker isn't reachable.
+    - This is the default.
+- `CHR_IDE_BUILD_VOLUME_NAME`: Name of the Docker volume where build artifacts are written to. Used when running programs in Docker, to properly mount their executable in the newly created empty container.
+  - Defaults to nothing.
 
 # Major dependencies
 - [**Node.js**](https://nodejs.org): JavaScript runtime
 - [**Socket.io**](https://socket.io/): Client/server communication
 - [**Express**](https://expressjs.com/): Serve static files, CORS management
+- [**Dockerode**](https://github.com/apocas/dockerode): Manage the Docker daemon
