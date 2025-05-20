@@ -72,9 +72,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Inspect and Fetch Image Digests
+        run: |
+          AMD64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 --format '{{json .Digest}}')
+          ARM64_DIGEST=$(docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64 --format '{{json .Digest}}')
+          echo "AMD64_DIGEST=${AMD64_DIGEST}" >> $GITHUB_ENV
+          echo "ARM64_DIGEST=${ARM64_DIGEST}" >> $GITHUB_ENV
+
       - name: Create and Push Multi-Arch Manifest
         run: |
-          docker manifest create ${{ env.IMAGE_NAME }}:latest \
-            --amend ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-amd64 \
-            --amend ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest-arm64
+          docker manifest create ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            --amend ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ env.AMD64_DIGEST }} \
+            --amend ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ env.ARM64_DIGEST }}
           docker manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
