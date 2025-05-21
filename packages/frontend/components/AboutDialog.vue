@@ -5,7 +5,7 @@
         <template #body>
             <p class="pb-4">CHR IDE is a web-based playground built around <ULink to="https://gitlab.com/vynce/chrpp" inactive-class="text-primary">CHR++</ULink>, a CHR-to-C++ compiler.</p>
 
-            <p class="pb-4">CHR IDE is free software. The source code is available on <ULink to="https://github.com/ttcchhmm/chr-ide" inactive-class="text-primary">GitHub</ULink>.</p>
+            <p class="pb-4">CHR IDE is free software (<ULink to="https://github.com/ttcchhmm/chr-ide/blob/main/LICENCE" inactive-class="text-primary">GNU AGPLv3</ULink>). The source code is available on <ULink to="https://github.com/ttcchhmm/chr-ide" inactive-class="text-primary">GitHub</ULink>.</p>
 
             <p>Credits:</p>
             <ul class="pl-8 list-disc">
