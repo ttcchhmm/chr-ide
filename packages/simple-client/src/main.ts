@@ -27,3 +27,12 @@ socket.on('parsing_var', (variable: CHRVariable) => {
 });
 socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
 
+
+socket.on('connect', () => {
+	socket.emit('pushJob', `
+		<chr_constraint> gcd(+unsigned long int), res(?unsigned long int)
+		gcd1 @ gcd(0ul) <=> success();;
+		gcd2 @ gcd(N) \\ gcd(M) <=> N <= M | gcd(M-N);;
+		res  @ gcd(N) \\ res(M) <=> M %= N;;
+`, ["gcd(4)", "gcd(8)", "res(X)"], [{name: "X", value : ""}] );
+});
