@@ -3,6 +3,7 @@ import { mkdir, writeFile, readdir, readFile, access, constants } from 'node:fs/
 import { spawn, type ChildProcess } from 'node:child_process';
 import { CHRVariable } from '@chr-ide/core';
 import { findVariableTypes, findUppercaseVariables } from './parser.js';
+import verbose from './utils/verbose.js';
 
 /**
  * Wait for a process to end and return its exit code.
