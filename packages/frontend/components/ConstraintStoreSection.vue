@@ -33,7 +33,7 @@ const { constraints } = storeToRefs(useChrStore());
             <InputWithButton label="Constraint" placeholder="Add a constraint..." @submit="submit"/>
 
             <label for="constraints-list" class="sr-only">Constraints list</label>
-            <ol class="pt-4 grow">
+            <ol class="grow">
                 <li v-for="(constraint,index) in constraints" :key="constraint" class="pt-2 pb-2 border-b border-gray-300 flex">
                     <UButton icon="i-lucide-x" variant="ghost" @click="erase(index)">
                         <span class="sr-only">Erase the constraint</span>

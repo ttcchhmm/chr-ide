@@ -1,6 +1,37 @@
 import type { CHRSocket } from "./socket.js"
 import verbose from "./utils/verbose.js";
 import { CHRVariable } from "@chr-ide/core";
+
+/**
+ * A logical variable.
+ */
+type LogicalVariable = {
+    /**
+     * Name of the constraint.
+     */
+    constraint: string;
+
+    /**
+     * Position of the variable within the constraint.
+     */
+    position: number;
+
+    /**
+     * Name of the variable.
+     */
+    variable: string;
+};
+
+/**
+ * A logical variable with typing information.
+ */
+type TypedLogicalVariable = {
+    /**
+     * The type associated with this variable.
+     */
+    type: string | null;
+} & LogicalVariable;
+
 /**
  * Parse the trace of a CHR program, and send the events to the client.
  * 
@@ -76,4 +107,76 @@ export default (socket: CHRSocket) => (input: string) => {
             }
         });
     }
+};
+
+/**
+ * Check if a variable is uppercase.
+ * 
+ * @param constraints - An array of constraints to check.
+ * @returns An array of objects containing the constraint name, position, and variable name.
+ */
+export const findUppercaseVariables = (constraints: string[]) => {
+    const results = [] as LogicalVariable[];
+
+    constraints.forEach(constraint => {
+        const regex = /(\w+)\(([^)]+)\)/; 
+        const match = regex.exec(constraint);
+
+        if (match) {
+            const constraintName = match[1];
+            const args = match[2].split(','); 
+
+            args.forEach((arg, index) => {
+                const trimmedArg = arg.trim();
+                if (trimmedArg.match(/^[A-Z][A-Za-z]*$/)) { 
+                    results.push({ constraint: constraintName, position: index + 1, variable: trimmedArg }); 
+                }
+            });
+        }
+    });
+
+    return results;
+};
+
+/**
+ * Find the types of variables in the code.
+ * 
+ * @param code - The code to analyze.
+ * @param variables - An array of objects containing the constraint name, position, and variable name.
+ * @returns An array of objects containing the constraint name, position, type, and variable name.
+ */
+export const findVariableTypes = (code: string, variables: LogicalVariable[]) => {
+    const results = [] as TypedLogicalVariable[];
+
+    // Extract contraint declaration
+    const constraintDeclarations = code.match(/<chr_constraint>[^;]+;/g);
+    if (!constraintDeclarations) {
+        // Return null if no variables are found
+        variables.forEach(variable => {
+            results.push({ ...variable, type: null });
+        });
+        return results;
+    }
+
+    // Associates variables with their type
+    variables.forEach(({ constraint, position, variable }) => {
+        let type: string | null = null;
+
+        // Match declarations with their constraint
+        constraintDeclarations.forEach(declaration => {
+            const regex = new RegExp(`${constraint}\\(([^)]+)\\)`); // Find the proper constraint
+            const match = regex.exec(declaration);
+
+            if (match) {
+                const params = match[1].split(',').map(param => param.trim());
+                if (position - 1 < params.length) {
+                    type = params[position - 1].replace(/[+?]/g, '').trim(); // Remove modifiers to get the type
+                }
+            }
+        });
+
+        results.push({ constraint, position, type, variable });
+    });
+
+    return results;
 };

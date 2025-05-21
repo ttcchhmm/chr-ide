@@ -11,13 +11,13 @@ const erase = (index: number) => {
         <h2 class="text-xl font-bold pb-4">Variables</h2>
         
         <div class="grow">
-            <AddWatchInput/>
+            <InputWithButton label="Watch" placeholder="Watch name..." @submit="(name) => variables.push({ name, value: '' })"/>
         
             <table v-if="variables.length !== 0" class="w-full border-collapse" aria-label="Watched variables">
                 <thead>
                     <tr>
                         <th class="p-1 border border-(--ui-border-accented) text-left"/>
-                        <th class="p-1 border border-(--ui-border-accented) text-left">Variable Name</th>
+                        <th class="p-1 border border-(--ui-border-accented) text-left">Variable</th>
                         <th class="p-1 border border-(--ui-border-accented) text-left">Value</th>
                     </tr>
                 </thead>

@@ -2,6 +2,7 @@ import Config from './config.js';
 import { mkdir, writeFile, readdir, readFile, access, constants } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { CHRVariable } from '@chr-ide/core';
+import { findVariableTypes, findUppercaseVariables } from './parser.js';
 
 /**
  * Wait for a process to end and return its exit code.
@@ -19,83 +20,6 @@ const verboseProcessOutput = (process: ChildProcess) => {
         process.stdout?.on('data', (output: string) => console.log(`[STDOUT]: ${output}`));
         process.stderr?.on('data', (output: string) => console.log(`[STDERR]: ${output}`));
     }
-};
-
-
-/**
- * Check if a variable is uppercase.
- * 
- * @param constraints - An array of constraints to check.
- * @returns An array of objects containing the constraint name, position, and variable name.
- */
-export const findUppercaseVariables = (constraints: string[]): { constraint: string, position: number, variable: string }[] => {
-    const results: { constraint: string, position: number, variable: string }[] = [];
-
-    constraints.forEach(constraint => {
-        const regex = /(\w+)\(([^)]+)\)/; 
-        const match = regex.exec(constraint);
-
-        if (match) {
-            const constraintName = match[1];
-            const args = match[2].split(','); 
-
-            args.forEach((arg, index) => {
-                const trimmedArg = arg.trim();
-                if (trimmedArg.match(/^[A-Z][A-Za-z]*$/)) { 
-                    results.push({ constraint: constraintName, position: index + 1, variable: trimmedArg }); 
-                }
-            });
-        }
-    });
-
-    return results;
-};
-
-
-/**
- * Find the types of variables in the code.
- * 
- * @param code - The code to analyze.
- * @param variables - An array of objects containing the constraint name, position, and variable name.
- * @returns An array of objects containing the constraint name, position, type, and variable name.
- */
-export const findVariableTypes = (
-    code: string,
-    variables: { constraint: string, position: number, variable: string }[]
-): { constraint: string, position: number, type: string | null, variable: string }[] => {
-    const results: { constraint: string, position: number, type: string | null, variable: string }[] = [];
-
-    // Extraire les déclarations de contraintes
-    const constraintDeclarations = code.match(/<chr_constraint>[^;]+;/g);
-    if (!constraintDeclarations) {
-        // Si aucune déclaration n'est trouvée, retourner null pour toutes les variables
-        variables.forEach(variable => {
-            results.push({ ...variable, type: null });
-        });
-        return results;
-    }
-
-    // Parcourir chaque variable pour trouver son type
-    variables.forEach(({ constraint, position, variable }) => {
-        let type: string | null = null;
-
-        // Rechercher la déclaration correspondant à la contrainte
-        constraintDeclarations.forEach(declaration => {
-            const regex = new RegExp(`${constraint}\\(([^)]+)\\)`); // Trouver la déclaration de la contrainte
-            const match = regex.exec(declaration);
-
-            if (match) {
-                const params = match[1].split(',').map(param => param.trim());
-                if (position - 1 < params.length) {
-                    type = params[position - 1].replace(/[+?]/g, '').trim(); // Supprimer les modificateurs (+, ?) et extraire le type
-                }
-            }
-        });
-
-        results.push({ constraint, position, type, variable });
-    });
-
-    return results;
 };
 
 /**

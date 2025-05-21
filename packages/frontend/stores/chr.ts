@@ -106,7 +106,7 @@ export const useChrStore = defineStore('chr', {
 
                 if(!variable) {
                     this.variables.push(v);
-                    this.log(`Got variable: ${v.constraint}/${v.position} = ${v.value}.`);
+                    this.log(`Got variable: ${v.name} = ${v.value}.`);
                 }
             });
 
