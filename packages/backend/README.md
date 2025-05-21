@@ -34,6 +34,8 @@ The following environment variables can be used to configure the behavior of CHR
     - This is the value used by the [Docker image](../../Dockerfile).
 - `CHR_IDE_BUILD_VOLUME_NAME`: Name of the Docker volume where build artifacts are written to. Used when running programs in Docker, to properly mount their executable in the newly created empty container.
   - Defaults to nothing.
+- `CHR_IDE_EXECUTION_TIMEOUT`: Delay in milliseconds before stopping a program that haven't stopped yet.
+  - Defaults to 15000.
 
 # Major dependencies
 - [**Node.js**](https://nodejs.org): JavaScript runtime

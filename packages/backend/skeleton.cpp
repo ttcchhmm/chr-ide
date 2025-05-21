@@ -1,10 +1,6 @@
 #include <iostream>
 #include <chrpp.hh>
 
-#ifdef END_SLEEP
-#include <unistd.h>
-#endif
-
 template< typename T >
 void print(T& space)
 {
@@ -44,10 +40,6 @@ int main() {
 
     chr::Statistics::print(std::cout);
     std::cout << chr::Statistics::to_string() << std::endl;
-
-	#ifdef END_SLEEP
-	sleep(1);
-	#endif
 	
 	return 0;
 }
