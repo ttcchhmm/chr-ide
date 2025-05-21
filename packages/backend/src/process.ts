@@ -21,6 +21,83 @@ const verboseProcessOutput = (process: ChildProcess) => {
     }
 };
 
+
+/**
+ * Check if a variable is uppercase.
+ * 
+ * @param constraints - An array of constraints to check.
+ * @returns An array of objects containing the constraint name, position, and variable name.
+ */
+export const findUppercaseVariables = (constraints: string[]): { constraint: string, position: number, variable: string }[] => {
+    const results: { constraint: string, position: number, variable: string }[] = [];
+
+    constraints.forEach(constraint => {
+        const regex = /(\w+)\(([^)]+)\)/; 
+        const match = regex.exec(constraint);
+
+        if (match) {
+            const constraintName = match[1];
+            const args = match[2].split(','); 
+
+            args.forEach((arg, index) => {
+                const trimmedArg = arg.trim();
+                if (trimmedArg.match(/^[A-Z][A-Za-z]*$/)) { 
+                    results.push({ constraint: constraintName, position: index + 1, variable: trimmedArg }); 
+                }
+            });
+        }
+    });
+
+    return results;
+};
+
+
+/**
+ * Find the types of variables in the code.
+ * 
+ * @param code - The code to analyze.
+ * @param variables - An array of objects containing the constraint name, position, and variable name.
+ * @returns An array of objects containing the constraint name, position, type, and variable name.
+ */
+export const findVariableTypes = (
+    code: string,
+    variables: { constraint: string, position: number, variable: string }[]
+): { constraint: string, position: number, type: string | null, variable: string }[] => {
+    const results: { constraint: string, position: number, type: string | null, variable: string }[] = [];
+
+    // Extraire les déclarations de contraintes
+    const constraintDeclarations = code.match(/<chr_constraint>[^;]+;/g);
+    if (!constraintDeclarations) {
+        // Si aucune déclaration n'est trouvée, retourner null pour toutes les variables
+        variables.forEach(variable => {
+            results.push({ ...variable, type: null });
+        });
+        return results;
+    }
+
+    // Parcourir chaque variable pour trouver son type
+    variables.forEach(({ constraint, position, variable }) => {
+        let type: string | null = null;
+
+        // Rechercher la déclaration correspondant à la contrainte
+        constraintDeclarations.forEach(declaration => {
+            const regex = new RegExp(`${constraint}\\(([^)]+)\\)`); // Trouver la déclaration de la contrainte
+            const match = regex.exec(declaration);
+
+            if (match) {
+                const params = match[1].split(',').map(param => param.trim());
+                if (position - 1 < params.length) {
+                    type = params[position - 1].replace(/[+?]/g, '').trim(); // Supprimer les modificateurs (+, ?) et extraire le type
+                }
+            }
+        });
+
+        results.push({ constraint, position, type, variable });
+    });
+
+    return results;
+};
+
 /**
  * Check that `chrppc` is available.
  * @returns A promise that resolve to true if `chrppc` is available, false otherwise.
@@ -51,16 +128,23 @@ export const checkForCompiler = async () => {
     return await waitForProcessEnd(compiler) === 0;
 };
 
-export const prepareFile = async (code: string, constraints: string[], watch: CHRVariable[]) => {
+export const prepareFile = async (code: string, constraints: string[], watch : CHRVariable[]) => {
     let fileContent = await readFile("./skeleton.cpp", 'utf-8');
     
     // Protect against code injection
     code = code.replaceAll(/(\/\*)|(\*\/)|(<\/CHR>)/gi, '');
 
+
+    const logicalVariables = findUppercaseVariables(constraints);
+    const variableTypes = findVariableTypes(code, logicalVariables);
+
+    console.log('Logical variables:', logicalVariables);
+    console.log('Variable types:', variableTypes);
+
+    //res(X)
     constraints = constraints.map(constraint => 
         constraint.replace(/\/\*[\s\S]*?\*\//g, '')
     );
-        
 
     fileContent = fileContent.replace("//Rules", code);
     fileContent = fileContent.replace(
@@ -68,17 +152,27 @@ export const prepareFile = async (code: string, constraints: string[], watch: CH
         constraints.map(constraint => "space->" + constraint + ";").join('\n')
     );
 
+    const vartemplate = 'chr::Logical_var<//Type> //Name;';
+    const printvartemplate = 'std::cout << "TRACE [VAR][//Name][" << //Name <<"]"<< std::endl;';
 
-    const template = `for (auto& c : space->get_//constraint_store()){
-        std::cout << "TRACE [VAR][//constraint///position][" << *std::get<//position>(c)<<"]"<< std::endl;
-    }
-    `;
+    fileContent = fileContent.replace("//Variables", variableTypes.map((item: { constraint: string, position: number, type: string | null, variable: string }) => {
+        if (item.type) {
+            return vartemplate
+                .replace(/\/\/Type/g, () => item.type as string)
+                .replace(/\/\/Name/g, () => item.variable);
+        } else {
+            return '';
+        }
+    }).join('\n'));
 
-    fileContent = fileContent.replace("//Store", watch.map((item: CHRVariable) => 
-        template
-            .replace(/\/\/constraint/g, item.constraint)
-            .replace(/\/\/position/g, item.position.toString())
-    ).join('\n'));
+    fileContent = fileContent.replace("//PrintVariables", watch.map((item: CHRVariable) => {
+        if (item.name) {
+            return printvartemplate
+                .replace(/\/\/Name/g, () => item.name);
+        } else {
+            return '';
+        }
+    }).join('\n'));
 
 
     return fileContent;

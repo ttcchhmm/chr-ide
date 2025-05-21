@@ -27,19 +27,3 @@ socket.on('parsing_var', (variable: CHRVariable) => {
 });
 socket.on('parsing_backtrack', (backtrack) => console.log(`Backtrack: ${backtrack}`));
 
-
-socket.on('connect', () => {
-	socket.emit('pushJob', `
-
-		<chr_constraint> acker(?int,?int,?int)
-		
-		acker(X, Y, A1) \\ acker(X, Y, A2) <=> A1 %= A2;;
-		acker(0, Y, A) ==>  A %= Y + 1;;
-		acker(X, 0, A) ==> acker(X - 1, 1, A);;
-		acker(X, Y, A) ==> X > 0 and Y > 0 | 
-							acker(X, Y - 1, A1),
-							acker(X - 1, A1, A);;
-
-
-		`, ["acker(2,3, 5)"], [{constraint: "acker", position: 1, value : "5"} as CHRVariable] );
-});

@@ -38,13 +38,14 @@ export default (socket: CHRSocket) => (input: string) => {
                     break;
                 }
                 case 'VAR': {
-                    // format : acker/1 2
-                    const [constraint, position, value] = message.replace("/", " ").split(' ');
+                    // format : res
+                    console.log(`TRACE PARSER: VAR ${message} | Explanation: ${explanation}`);
+                    const [var_name, value] = message.replace("/", " ").split(' ');
                     const chrVariable: CHRVariable = {
-                        constraint: constraint.trim(),
-                        position: parseInt(position),
+                        name: var_name,
                         value: value
                     };
+                    console.log(chrVariable)
                     socket.emit('parsing_var', chrVariable);
                     break;
                 }

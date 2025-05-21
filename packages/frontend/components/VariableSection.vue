@@ -17,14 +17,13 @@ const erase = (index: number) => {
                 <thead>
                     <tr>
                         <th class="p-1 border border-(--ui-border-accented) text-left"/>
-                        <th class="p-1 border border-(--ui-border-accented) text-left">Constraint</th>
-                        <th class="p-1 border border-(--ui-border-accented) text-left">Position</th>
+                        <th class="p-1 border border-(--ui-border-accented) text-left">Variable Name</th>
                         <th class="p-1 border border-(--ui-border-accented) text-left">Value</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <tr v-for="(watch, index) in variables" :key="`${watch.constraint}-${watch.position}`"> <!-- pt-2 pb-2 border-b border-gray-300 flex -->
+                    <tr v-for="(watch, index) in variables" :key="`${watch.name}-${watch.value}`"> <!-- pt-2 pb-2 border-b border-gray-300 flex -->
                         <td class="p-1 border border-(--ui-border-accented) w-1">
                             <UButton icon="i-lucide-x" variant="ghost" class="w-full flex justify-center" @click="erase(index)">
                                 <span class="sr-only">Erase the watch</span>
@@ -32,11 +31,7 @@ const erase = (index: number) => {
                         </td>
 
                         <td class="p-1 border border-(--ui-border-accented) font-mono text-sm">
-                            {{ watch.constraint }}
-                        </td>
-
-                        <td class="p-1 border border-(--ui-border-accented) font-mono text-sm">
-                            {{ watch.position }}
+                            {{ watch.name }}
                         </td>
 
                         <td v-if="watch.value === ''" class="italic p-1 border border-(--ui-border-accented)">
