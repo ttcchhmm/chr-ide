@@ -56,4 +56,14 @@ diag @ queen(C1,R1), queen(C2,R2) <=> abs(C1-C2) == abs(R1-R2) | failure();;
 label_queen1 @ nqueens(N), next_queen(C) <=> *C == N | print(*this), success();;
 label_queen2 @ nqueens(N) \\ next_queen(C) <=> exists(r, 0, N-1, (queen(C,r), next_queen(C+1)) ) ;;`
     },
+    {
+        name: 'Syracuse\'s conjecture',
+        constraints: ['syracuse(17, Res)'],
+        variables: [{name: 'Res', value: '' }],
+        code:
+`<chr_constraint> syracuse(?unsigned long int, ?unsigned long int)
+stop @ syracuse(1LU, C) <=> C %= 0;;
+even_case @ syracuse(R,C) <=> R % 2 == 0 | syracuse(R / 2,C1), C %= C1 + 1;;
+odd_case @ syracuse(R,C) <=> R % 2 == 1 | syracuse(3 * R + 1,C1), C %= C1 + 1;;`
+    },
 ]) as readonly Example[]; 
