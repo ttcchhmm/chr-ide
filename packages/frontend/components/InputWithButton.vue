@@ -38,7 +38,7 @@ onMounted(() => {
 <template>
     <div>
         <label :for="id" class="sr-only">{{ props.label }}</label>
-        <UButtonGroup class="w-full flex">
+        <UButtonGroup class="w-full flex pb-4">
             <UInput :id="id" v-model="input" type="text" class="grow" :placeholder="props.placeholder" @keyup.enter="submit"/>
             <UButton :disabled="input.trim().length === 0" icon="i-lucide-plus" @click="submit">
                 <span class="sr-only">Add</span>

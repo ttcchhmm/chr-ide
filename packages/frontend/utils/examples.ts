@@ -17,8 +17,8 @@ hanoi(N - 1, Aux, Dest, Src);;`,
     },
     {
         name: 'Greatest Common Divisor',
-        constraints: ["gcd(12)", "gcd(8)"],
-        variables: [],
+        constraints: ["gcd(12)", "gcd(8)", "res(X)"],
+        variables: [{ name: 'X', value: '' }],
         code: 
 `<chr_constraint> gcd(+unsigned long int), res(?unsigned long int)
 gcd1 @ gcd(0ul) <=> success();;
@@ -28,7 +28,7 @@ res  @ gcd(N) \\ res(M) <=> M %= N;;`,
     {
         name: 'Acker',
         constraints: ['acker(2,3, 5)'],
-        variables: [{constraint: 'acker', position: 1, value : ''}],
+        variables: [],
         code:
 `<chr_constraint> acker(?int,?int,?int)
 		
