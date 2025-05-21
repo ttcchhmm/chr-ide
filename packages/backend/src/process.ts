@@ -2,6 +2,7 @@ import Config from './config.js';
 import { mkdir, writeFile, readdir, readFile, access, constants } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { CHRVariable } from '@chr-ide/core';
+import verbose from './utils/verbose.js';
 
 /**
  * Wait for a process to end and return its exit code.
@@ -157,6 +158,8 @@ export const cpp = async (directory: string, compileStatic: boolean) => {
         flags.push('-static');
         flags.push('-DEND_SLEEP');
     }
+
+    verbose(`[C++]: Compile flags:\n${flags.join(' ')}`);
 
     const compiler = spawn(
         Config.cppCompiler,

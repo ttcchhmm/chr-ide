@@ -18,7 +18,7 @@ export default (socket: CHRSocket) => (input: string) => {
             .map(l => {
                 const parts = l.split(' ');
                 const explanation = parts.slice(2).join(' '); // Extract the explanation
-                return { tokens: parts[1].substring(1, parts[1].length - 1).split(']['), explanation };
+                return { tokens: parts[1].substring(1, parts[1].length - 1).split('][').map(t => t.replaceAll(/\[|\]/gi, '')), explanation };
             });
 
         batches.forEach(({ tokens, explanation }) => {
@@ -33,7 +33,7 @@ export default (socket: CHRSocket) => (input: string) => {
                 case 'RULES': {
                     // format : acker#22(0,7,8)
                     const cleaned = message.replace(/#.*?\(/, '(');
-                    socket.emit('parsing_rules', cleaned );
+                    socket.emit('parsing_rules', cleaned);
                     break;
                 }
                 case 'VAR': {

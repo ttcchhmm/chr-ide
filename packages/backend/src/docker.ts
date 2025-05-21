@@ -97,27 +97,42 @@ export const runInContainer = async (programPath: string, onOutput: (output: str
                 Binds: [
                     `${Config.dockerBuildVolume}:${Config.compileDirectory}:ro`,
                 ],
-                AutoRemove: true,
                 CapDrop: ['ALL'], // https://docs.docker.com/engine/security/#linux-kernel-capabilities
+                NetworkMode: 'none',
             },
-        });
-
-        // Attach to the container's output stream
-        const stream = await container.attach({ stream: true, stdout: true, stderr: true });
-
-        // Process the stream and invoke the onOutput callback
-        stream.on('data', (chunk: string | Buffer) => {
-            onOutput(chunk.toString());
         });
 
         // Start the container
         verbose(`Starting container ${container.id}.`);
         await container.start();
 
+        // Attach to the container's logs
+        const stream = await container.logs({ follow: true, stdout: true });
+
+        let buffer = '';
+        stream.on('data', (chunk: string | Buffer) => {
+            const data = chunk.toString();
+            verbose(`\n[Docker ${container.id}]: Log data received\n${data}`);
+
+            const lines = (buffer + data).split('\n');
+            buffer = lines.pop() || '';
+
+            onOutput(lines.join('\n'));
+        });
+
+        stream.on('end', () => {
+            if(buffer) {
+                onOutput(buffer);
+            }
+        });
+
         // Wait for the container to finish
         await container.wait();
 
         verbose(`Container ${container.id} has finished execution.`);
+
+        // Delete the container
+        await container.remove();
     } else {
         throw new Error('Docker support is not enabled.');
     }

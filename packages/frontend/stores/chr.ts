@@ -85,11 +85,17 @@ export const useChrStore = defineStore('chr', {
                 this.log('Disconnected.')
             });
             
-            socket.on('error', (step) => {
+            socket.on('error', (step, message) => {
                 this.running = false;
+
+                let description = `The run failed at the following step: ${step}.`;
+                if(message) {
+                    description += `\n\n${message}`;
+                }
+
                 useToast().add({
                     title: 'Run failed',
-                    description: `The run failed at the following step: ${step}.`,
+                    description,
                     color: 'error',
                 });
 
