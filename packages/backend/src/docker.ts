@@ -105,6 +105,15 @@ export const runInContainer = async (programPath: string, onOutput: (output: str
         // Start the container
         verbose(`Starting container ${container.id}.`);
         await container.start();
+        let running = true;
+
+        // Setup the timeout
+        setTimeout(() => {
+            if(running) {
+                console.warn(`[Docker ${container.id}]: Ran for more than ${Config.executionTimeout} ms, stopping.`);
+                void container.stop();
+            }
+        }, Config.executionTimeout);
 
         // Attach to the container's logs
         const stream = await container.logs({ follow: true, stdout: true });
@@ -128,11 +137,12 @@ export const runInContainer = async (programPath: string, onOutput: (output: str
 
         // Wait for the container to finish
         await container.wait();
+        running = false;
 
         verbose(`Container ${container.id} has finished execution.`);
 
-        // Delete the container
-        await container.remove();
+        // Slight delay to make sure that we got time to read the logs
+        setTimeout(() => void container.remove(), 1000);
     } else {
         throw new Error('Docker support is not enabled.');
     }

@@ -82,6 +82,13 @@ const config = Object.freeze({
      * Set by the `CHR_IDE_BUILD_VOLUME_NAME` environment variable. Defaults to nothing.
      */
     dockerBuildVolume: process.env.CHR_IDE_BUILD_VOLUME_NAME ?? null,
+
+    /**
+     * Delay before killing a program that haven't ended yet.
+     * 
+     * Set by the `CHR_IDE_EXECUTION_TIMEOUT` environment variable. Defaults to 15000 milliseconds.
+     */
+    executionTimeout: parseInt(process.env.CHR_IDE_EXECUTION_TIMEOUT ?? '15000'),
 });
 
 export default config;

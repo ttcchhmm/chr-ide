@@ -75,12 +75,11 @@ export const prepareFile = async (code: string, constraints: string[], watch: CH
     }
     `;
 
-    fileContent = fileContent.replace("//Store", watch.map((item: CHRVariable) => 
+    fileContent = fileContent.replace("//Store", watch.map((item) => 
         template
             .replace(/\/\/constraint/g, item.constraint)
             .replace(/\/\/position/g, item.position.toString())
     ).join('\n'));
-
 
     return fileContent;
 };
@@ -156,7 +155,6 @@ export const cpp = async (directory: string, compileStatic: boolean) => {
 
     if(compileStatic) {
         flags.push('-static');
-        flags.push('-DEND_SLEEP');
     }
 
     verbose(`[C++]: Compile flags:\n${flags.join(' ')}`);
@@ -187,5 +185,18 @@ export const program = async (directory: string, onStdout: (line: string) => voi
     );
 
     p.stdout.on('data', (b: Buffer | string) => onStdout(b.toString()));
-    return await waitForProcessEnd(p) === 0;
+
+    // Setup the timeout
+    let running = true;
+    setTimeout(() => {
+        if(running) {
+            console.warn(`[${directory}/program]: Ran for more than ${Config.executionTimeout} ms, killing.`);
+            p.kill('SIGKILL');
+        }
+    }, Config.executionTimeout);
+
+    const isProperExit = await waitForProcessEnd(p) === 0;
+    running = false;
+
+    return isProperExit;
 };
