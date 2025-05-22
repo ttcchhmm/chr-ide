@@ -26,9 +26,9 @@ gcd2 @ gcd(N) \\ gcd(M) <=> N <= M | gcd(M % N);;
 res  @ gcd(N) \\ res(M) <=> M %= N;;`,
     },
     {
-        name: 'Acker',
-        constraints: ['acker(2,3, 5)'],
-        variables: [],
+        name: 'Ackermann function',
+        constraints: ['acker(2, 3, X)'],
+        variables: [{name: 'X', value: ''}],
         code:
 `<chr_constraint> acker(?int,?int,?int)
 		
