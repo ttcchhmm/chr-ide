@@ -1,8 +1,6 @@
 import Config from './config.js';
-import { mkdir, writeFile, readdir, readFile, access, constants } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, access, constants } from 'node:fs/promises';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { CHRVariable } from '@chr-ide/core';
-import { findVariableTypes, findUppercaseVariables } from './parser.js';
 import verbose from './utils/verbose.js';
 
 /**
@@ -53,54 +51,7 @@ export const checkForCompiler = async () => {
     return await waitForProcessEnd(compiler) === 0;
 };
 
-export const prepareFile = async (code: string, constraints: string[], watch : CHRVariable[]) => {
-    let fileContent = await readFile("./skeleton.cpp", 'utf-8');
-    
-    // Protect against code injection
-    code = code.replaceAll(/(\/\*)|(\*\/)|(<\/CHR>)/gi, '');
 
-
-    const logicalVariables = findUppercaseVariables(constraints);
-    const variableTypes = findVariableTypes(code, logicalVariables);
-
-    console.log('Logical variables:', logicalVariables);
-    console.log('Variable types:', variableTypes);
-
-    //res(X)
-    constraints = constraints.map(constraint => 
-        constraint.replace(/\/\*[\s\S]*?\*\//g, '')
-    );
-
-    fileContent = fileContent.replace("//Rules", code);
-    fileContent = fileContent.replace(
-        "//Constraints",
-        constraints.map(constraint => "space->" + constraint + ";").join('\n')
-    );
-
-    const vartemplate = 'chr::Logical_var<//Type> //Name;';
-    const printvartemplate = 'std::cout << "TRACE [VAR][//Name][" << //Name <<"]"<< std::endl;';
-
-    fileContent = fileContent.replace("//Variables", variableTypes.map((item: { constraint: string, position: number, type: string | null, variable: string }) => {
-        if (item.type) {
-            return vartemplate
-                .replace(/\/\/Type/g, () => item.type as string)
-                .replace(/\/\/Name/g, () => item.variable);
-        } else {
-            return '';
-        }
-    }).join('\n'));
-
-    fileContent = fileContent.replace("//PrintVariables", watch.map((item: CHRVariable) => {
-        if (item.name) {
-            return printvartemplate
-                .replace(/\/\/Name/g, () => item.name);
-        } else {
-            return '';
-        }
-    }).join('\n'));
-
-    return fileContent;
-};
 
 /**
  * Setup the compilation environment.

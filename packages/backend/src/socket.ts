@@ -1,6 +1,7 @@
 import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@chr-ide/core";
 import { DisconnectReason, type Server, type Socket } from "socket.io";
-import { chrppc, cpp, prepareFile , program, setupCompilation } from "./process.js";
+import { chrppc, cpp , program, setupCompilation } from "./process.js";
+import { prepareFile } from "./template.js";
 import parser from "./parser.js";
 import { CHRVariable } from "@chr-ide/core";
 import Config from "./config.js";
