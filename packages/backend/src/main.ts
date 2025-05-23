@@ -55,4 +55,12 @@ app.use(express.static('./web'));
 
 setup(io);
 
+// Setup proper termination
+process.on('SIGINT', () => {
+    console.log('Exiting...');
+    server.close();
+});
+
+server.on('close', () => exit(0));
+
 server.listen(Config.port, () => console.log(`Server running on ${Config.port}`));
