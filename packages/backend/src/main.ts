@@ -59,6 +59,8 @@ setup(io);
 process.on('SIGINT', () => {
     console.log('Exiting...');
     server.close();
+    server.closeAllConnections();
+    io.sockets.sockets.forEach(socket => socket.disconnect(true));
 });
 
 server.on('close', () => exit(0));
