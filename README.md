@@ -73,22 +73,33 @@ CHR IDE relies on [Socket.io](https://socket.io/) for an asynchronous, event-dri
 ```mermaid
 sequenceDiagram
 
-User ->> Backend: Send a CHR program
-Backend --> Backend: Generate a chrpp file
-Backend ->> User: Inform the user that chrppc is about to run
-Backend --> Backend: Run chrrpc
-Backend ->> User: Inform the user that the C++ compiler is about to run
-Backend --> Backend: Run a C++ compiler
-Backend ->> User: Inform the user that the program is about to run
-Backend ->> Program: Start
-loop While the program is running
-    Program ->> Backend: Send a CHR trace
-    Backend --> Backend: Parse the trace
-    Backend ->> User: Send the parsed result
-    User --> User: Update the interface
+loop While the user is on the application
+  User ->> Backend: Send a CHR program
+  Backend --> Backend: Generate a chrpp file
+  Backend ->> User: Inform the user that chrppc is about to run
+  Backend --> Backend: Run chrrpc
+  break If chrppc fails
+    Backend ->> User: Inform the user that chrppc failed
+  end
+  Backend ->> User: Inform the user that the C++ compiler is about to run
+  Backend --> Backend: Run a C++ compiler
+  break If the C++ compiler fails
+    Backend ->> User: Inform the user that the C++ compiler failed
+  end
+  Backend ->> User: Inform the user that the program is about to run
+  Backend ->> Program: Start
+  loop While the program is running
+      break If the process ends unexpectedly
+        Backend ->> User: Inform the user that the program failed
+      end
+      Program ->> Backend: Send a CHR trace
+      Backend --> Backend: Parse the trace
+      Backend ->> User: Send the parsed result
+      User --> User: Update the interface
+  end
+  Program ->> Backend: End
+  Backend ->> User: Inform the user that the execution finished
 end
-Program ->> Backend: End
-Backend ->> User: Inform the user that the execution finished
 ```
 
 ## Build the Docker image
